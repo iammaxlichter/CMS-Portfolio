@@ -37,7 +37,7 @@ export default async function AdminHome() {
         {(pages ?? []).map(p => (
           <li key={p.id} className="p-4 flex items-center justify-between">
             <div>
-              <div className="font-medium">{p.title}</div>
+              <div className="font-medium text-black">{p.title}</div>
               <div className="text-xs text-neutral-500">{p.kind} · /{p.slug} · {p.published ? 'published' : 'draft'}</div>
             </div>
             <Link className="text-blue-600" href={`/admin/${p.id}`}>Edit</Link>

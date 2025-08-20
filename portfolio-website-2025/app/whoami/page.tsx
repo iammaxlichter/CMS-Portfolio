@@ -29,7 +29,7 @@ export default async function AdminPages() {
         {pages?.map(p => (
           <li key={p.id} className="p-4 flex items-center justify-between">
             <div>
-              <div className="font-medium">{p.title}</div>
+              <div className="font-medium text-black">{p.title}</div>
               <div className="text-xs text-neutral-500">{p.kind} · /{p.slug}</div>
             </div>
             <Link className="text-blue-600" href={`/admin/pages/${p.id}`}>Edit</Link>
