@@ -1,36 +1,34 @@
 // app/[slug]/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Image from "next/image";
-import type { Block } from "@/lib/blocks/types";
+import type { Block, ColumnsData } from "@/lib/blocks/types";
 
-function RenderBlock({ b }: { b: Block }) {
+function BlockView({ b }: { b: Block }) {
   switch (b.block_type) {
     case "title":
-      return <h1 className="text-3xl md:text-4xl font-bold">{b.data.text}</h1>;
+      return <h1 className="text-3xl md:text-4xl font-bold">{(b.data as any).text}</h1>;
     case "subtitle":
-      return (
-        <h2 className="text-xl md:text-2xl text-neutral-600">{b.data.text}</h2>
-      );
+      return <h2 className="text-xl md:text-2xl text-neutral-600">{(b.data as any).text}</h2>;
     case "paragraph":
       return (
         <div
           className="prose max-w-none"
-          dangerouslySetInnerHTML={{ __html: b.data.html }}
+          dangerouslySetInnerHTML={{ __html: (b.data as any).html }}
         />
       );
     case "image":
       return (
         <figure className="my-4">
           <Image
-            src={`/${b.data.path}`}
-            alt={b.data.alt || ""}
+            src={`/${(b.data as any).path}`}
+            alt={(b.data as any).alt || ""}
             width={1600}
             height={900}
             className="rounded-xl w-full h-auto"
           />
-          {b.data.alt && (
+          {(b.data as any).alt && (
             <figcaption className="text-sm text-neutral-500 mt-1">
-              {b.data.alt}
+              {(b.data as any).alt}
             </figcaption>
           )}
         </figure>
@@ -38,7 +36,7 @@ function RenderBlock({ b }: { b: Block }) {
     case "gallery":
       return (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {b.data.paths.map((p: string, i: number) => (
+          {((b.data as any).paths ?? []).map((p: string, i: number) => (
             <Image
               key={i}
               src={`/${p}`}
@@ -51,7 +49,8 @@ function RenderBlock({ b }: { b: Block }) {
         </div>
       );
     case "video_youtube": {
-      const id = b.data.url?.match(/(?:v=|be\/)([A-Za-z0-9_-]{11})/)?.[1];
+      const url = (b.data as any).url as string;
+      const id = url?.match(/(?:v=|be\/)([A-Za-z0-9_-]{11})/)?.[1];
       return id ? (
         <div className="aspect-video">
           <iframe
@@ -63,52 +62,86 @@ function RenderBlock({ b }: { b: Block }) {
         </div>
       ) : null;
     }
-    case "columns":
-      return (
-        <div
-          className={`grid gap-6 ${
-            b.data.columns === 2 ? "md:grid-cols-2" : "grid-cols-1"
-          }`}
-        >
-          <div className="space-y-2">
-            {(b.data.left || []).map((t: string, i: number) => (
-              <p key={i}>{t}</p>
-            ))}
-          </div>
-          {b.data.columns === 2 && (
-            <div className="space-y-2">
-              {(b.data.right || []).map((t: string, i: number) => (
-                <p key={i}>{t}</p>
-              ))}
-            </div>
-          )}
-        </div>
-      );
     default:
       return null;
   }
 }
 
-export default async function Page({ params }: { params: { slug: string } }) {
+function ColumnsView({
+  block,
+  all,
+}: {
+  block: Block; // columns
+  all: Block[];
+}) {
+  const cols = (block.data as ColumnsData).columns;
+  const left = all
+    .filter((x) => x.parent_id === block.id && x.slot === "left")
+    .sort((a, b) => a.position - b.position);
+  const right = all
+    .filter((x) => x.parent_id === block.id && x.slot === "right")
+    .sort((a, b) => a.position - b.position);
+
+  return (
+    <div className={`grid gap-6 ${cols === 2 ? "md:grid-cols-2" : "grid-cols-1"}`}>
+      <div className="space-y-6">
+        {left.map((child) =>
+          child.block_type === "columns" ? (
+            <ColumnsView key={child.id} block={child} all={all} />
+          ) : (
+            <BlockView key={child.id} b={child} />
+          )
+        )}
+      </div>
+      {cols === 2 && (
+        <div className="space-y-6">
+          {right.map((child) =>
+            child.block_type === "columns" ? (
+              <ColumnsView key={child.id} block={child} all={all} />
+            ) : (
+              <BlockView key={child.id} b={child} />
+            )
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;  // 👈 unwrap
+
   const supabase = await createClient();
   const { data: page } = await supabase
     .from("pages")
     .select("*")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .maybeSingle();
+
   if (!page || !page.published) return null;
 
   const { data: blocks } = await supabase
     .from("content_blocks")
-    .select("*")
+    .select("id,page_id,block_type,data,position,parent_id,slot")
     .eq("page_id", page.id)
     .order("position", { ascending: true });
 
+  const all = (blocks ?? []) as Block[];
+  const root = all.filter((b) => !b.parent_id).sort((a, b) => a.position - b.position);
+
   return (
     <main className="mx-auto max-w-3xl p-6 space-y-6">
-      {(blocks ?? []).map((b: Block) => (
-        <RenderBlock key={b.id} b={b} />
-      ))}
+      {root.map((b) =>
+        b.block_type === "columns" ? (
+          <ColumnsView key={b.id} block={b} all={all} />
+        ) : (
+          <BlockView key={b.id} b={b} />
+        )
+      )}
     </main>
   );
 }

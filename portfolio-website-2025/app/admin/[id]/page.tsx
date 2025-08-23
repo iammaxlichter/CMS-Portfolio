@@ -3,11 +3,15 @@ import BlockEditor from "@/components/admin/BlockEditor";
 import Link from "next/link";
 
 export default async function EditPage({ params }: { params: { id: string } }) {
-  const supabase = await createClient();
+
+  const { id } = await params;
+
+   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("role")
@@ -15,17 +19,17 @@ export default async function EditPage({ params }: { params: { id: string } }) {
     .maybeSingle();
   if (!profile || profile.role !== "admin") return null;
 
-  const { data: page } = await supabase
-    .from("pages")
-    .select("*")
-    .eq("id", params.id)
-    .maybeSingle();
-    
+  const { data: page } = await supabase.from("pages").select("*").eq("id", id).maybeSingle();
+
+  // app/admin/[id]/page.tsx  (example)
   const { data: blocks } = await supabase
     .from("content_blocks")
-    .select("*")
-    .eq("page_id", params.id)
-    .order("position", { ascending: true }); // ← change this
+    .select("id,page_id,block_type,data,position,parent_id,slot")
+    .eq("page_id", id)
+    .order("position", { ascending: true });
+
+  // pass to editor:
+  <BlockEditor pageId={params.id} initial={blocks ?? []} />
 
   return (
     <main className="mx-auto max-w-4xl p-6 space-y-6">
