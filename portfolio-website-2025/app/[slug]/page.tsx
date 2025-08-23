@@ -1,67 +1,124 @@
 // app/[slug]/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Image from "next/image";
-import type { Block, ColumnsData } from "@/lib/blocks/types";
+import type {
+  Block
+} from "@/lib/blocks/types";
+
+import {
+  isTitleData,
+  isSubtitleData,
+  isParagraphData,
+  isImageData,
+  isGalleryData,
+  isVideoData,
+  isColumnsData,
+  isButtonData,
+  isSlideshowData,
+} from "@/lib/blocks/types";
+
+import Slideshow from "@/components/blocks/Slideshow";
+
 
 function BlockView({ b }: { b: Block }) {
   switch (b.block_type) {
     case "title":
-      return <h1 className="text-3xl md:text-4xl font-bold">{(b.data as any).text}</h1>;
+      if (isTitleData(b)) {
+        return <h1 className="text-3xl md:text-4xl font-bold">{b.data.text}</h1>;
+      }
+      return null;
     case "subtitle":
-      return <h2 className="text-xl md:text-2xl text-neutral-600">{(b.data as any).text}</h2>;
+      if (isSubtitleData(b)) {
+        return <h2 className="text-xl md:text-2xl text-neutral-600">{b.data.text}</h2>;
+      }
+      return null;
     case "paragraph":
-      return (
-        <div
-          className="prose max-w-none"
-          dangerouslySetInnerHTML={{ __html: (b.data as any).html }}
-        />
-      );
+      if (isParagraphData(b)) {
+        return (
+          <div
+            className="prose max-w-none"
+            dangerouslySetInnerHTML={{ __html: b.data.html }}
+          />
+        );
+      }
+      return null;
     case "image":
-      return (
-        <figure className="my-4">
-          <Image
-            src={`/${(b.data as any).path}`}
-            alt={(b.data as any).alt || ""}
-            width={1600}
-            height={900}
-            className="rounded-xl w-full h-auto"
-          />
-          {(b.data as any).alt && (
-            <figcaption className="text-sm text-neutral-500 mt-1">
-              {(b.data as any).alt}
-            </figcaption>
-          )}
-        </figure>
-      );
-    case "gallery":
-      return (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {((b.data as any).paths ?? []).map((p: string, i: number) => (
+      if (isImageData(b)) {
+        return (
+          <figure className="my-4">
             <Image
-              key={i}
-              src={`/${p}`}
-              alt=""
-              width={800}
-              height={600}
-              className="rounded-lg w-full h-auto"
+              src={`/${b.data.path}`}
+              alt={b.data.alt || ""}
+              width={1600}
+              height={900}
+              className="rounded-xl w-full h-auto"
             />
-          ))}
-        </div>
-      );
-    case "video_youtube": {
-      const url = (b.data as any).url as string;
-      const id = url?.match(/(?:v=|be\/)([A-Za-z0-9_-]{11})/)?.[1];
-      return id ? (
-        <div className="aspect-video">
-          <iframe
-            className="w-full h-full rounded-xl"
-            src={`https://www.youtube.com/embed/${id}`}
-            title="YouTube video"
-            allowFullScreen
-          />
-        </div>
-      ) : null;
-    }
+            {b.data.alt && (
+              <figcaption className="text-sm text-neutral-500 mt-1">
+                {b.data.alt}
+              </figcaption>
+            )}
+          </figure>
+        );
+      }
+      return null;
+    case "gallery":
+      if (isGalleryData(b)) {
+        return (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {(b.data.paths ?? []).map((p: string, i: number) => (
+              <Image
+                key={i}
+                src={`/${p}`}
+                alt=""
+                width={800}
+                height={600}
+                className="rounded-lg w-full h-auto"
+              />
+            ))}
+          </div>
+        );
+      }
+      return null;
+    case "video_youtube":
+      if (isVideoData(b)) {
+        const url = b.data.url;
+        const id = url?.match(/(?:v=|be\/)([A-Za-z0-9_-]{11})/)?.[1];
+        return id ? (
+          <div className="aspect-video">
+            <iframe
+              className="w-full h-full rounded-xl"
+              src={`https://www.youtube.com/embed/${id}`}
+              title="YouTube video"
+              allowFullScreen
+            />
+          </div>
+        ) : null;
+      }
+      return null;
+
+    case "button":
+      if (isButtonData(b)) {
+        const isExternal = /^https?:\/\//i.test(b.data.href);
+        return (
+          <a
+            href={b.data.href || "#"}
+            {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            className="inline-flex items-center rounded-lg bg-black px-4 py-2 font-medium text-white hover:bg-neutral-800"
+          >
+            {b.data.text || "Learn more"}
+          </a>
+        );
+      }
+      return null;
+
+    case "slideshow":
+      if (isSlideshowData(b)) {
+        return <Slideshow paths={b.data.paths ?? []} />;
+      }
+      return null;
+
+
     default:
       return null;
   }
@@ -74,7 +131,9 @@ function ColumnsView({
   block: Block; // columns
   all: Block[];
 }) {
-  const cols = (block.data as ColumnsData).columns;
+  if (!isColumnsData(block)) return null;
+
+  const cols = block.data.columns;
   const left = all
     .filter((x) => x.parent_id === block.id && x.slot === "left")
     .sort((a, b) => a.position - b.position);
@@ -113,7 +172,8 @@ export default async function Page({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;  // 👈 unwrap
+  // Await the params Promise
+  const { slug } = await params;
 
   const supabase = await createClient();
   const { data: page } = await supabase

@@ -1,7 +1,8 @@
 // app/admin/page.tsx
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export default async function AdminHome() {
   const supabase = await createClient();
@@ -23,7 +24,7 @@ export default async function AdminHome() {
 
       <form action={createPage} className="flex flex-wrap items-center gap-3">
         <input name="title" placeholder="Page title" className="rounded border p-2" required />
-        <input name="slug"  placeholder="slug (e.g. my-project)" className="rounded border p-2" required />
+        <input name="slug" placeholder="slug (e.g. my-project)" className="rounded border p-2" required />
         <label className="text-sm flex items-center gap-2">
           <input type="checkbox" name="kind_project" /> Project
         </label>
@@ -34,17 +35,38 @@ export default async function AdminHome() {
       </form>
 
       <ul className="divide-y rounded border bg-white">
-        {(pages ?? []).map(p => (
+        {(pages ?? []).map((p) => (
           <li key={p.id} className="p-4 flex items-center justify-between">
             <div>
               <div className="font-medium text-black">{p.title}</div>
-              <div className="text-xs text-neutral-500">{p.kind} · /{p.slug} · {p.published ? 'published' : 'draft'}</div>
+              <div className="text-xs text-neutral-500">
+                {p.kind} · /{p.slug} · {p.published ? "published" : "draft"}
+              </div>
             </div>
-            <Link className="text-blue-600" href={`/admin/${p.id}`}>Edit</Link>
+
+            <div className="flex items-center gap-3">
+              <Link className="text-blue-600" href={`/admin/${p.id}`}>
+                Edit
+              </Link>
+
+              {!p.published && (
+                <form action={deleteDraft}>
+                  <input type="hidden" name="id" value={p.id} />
+                  <button
+                    className="text-red-600 hover:underline"
+                    title="Delete draft"
+                  >
+                    Delete
+                  </button>
+                </form>
+              )}
+            </div>
           </li>
         ))}
         {(!pages || pages.length === 0) && (
-          <li className="p-4 text-sm text-neutral-500">No pages yet — create one above.</li>
+          <li className="p-4 text-sm text-neutral-500">
+            No pages yet — create one above.
+          </li>
         )}
       </ul>
     </main>
@@ -52,15 +74,40 @@ export default async function AdminHome() {
 }
 
 async function createPage(formData: FormData) {
-  'use server';
-  const supabase = await (await import('@/lib/supabase/server')).createClient();
-  const title = String(formData.get('title'));
-  const slug  = String(formData.get('slug'));
-  const kind  = formData.get('kind_project')
-    ? 'project'
-    : formData.get('kind_experience')
-    ? 'experience'
-    : 'standalone';
+  "use server";
+  const supabase = await (await import("@/lib/supabase/server")).createClient();
+  const title = String(formData.get("title"));
+  const slug = String(formData.get("slug"));
+  const kind =
+    formData.get("kind_project") ? "project" :
+      formData.get("kind_experience") ? "experience" :
+        "standalone";
 
-  await supabase.from('pages').insert({ title, slug, kind, published: false });
+  await supabase.from("pages").insert({ title, slug, kind, published: false });
+
+  revalidatePath("/admin");
+  revalidatePath("/");
+  redirect("/admin");
+}
+
+async function deleteDraft(formData: FormData) {
+  "use server";
+  const supabase = await (await import("@/lib/supabase/server")).createClient();
+  const id = String(formData.get("id"));
+
+  // Only allow deleting drafts
+  const { data: page } = await supabase
+    .from("pages")
+    .select("published")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!page || page.published) return;
+
+  await supabase.from("content_blocks").delete().eq("page_id", id);
+  await supabase.from("pages").delete().eq("id", id);
+
+  const { revalidatePath } = await import("next/cache");
+  revalidatePath("/admin");
+  revalidatePath("/");
 }

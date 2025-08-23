@@ -20,13 +20,34 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { supabase } from "@/lib/supabase/client";
 
-// Types (must match /lib/blocks/types.ts you updated in step 2)
+// Types (updated import path)
 import type {
   Block,
   BlockType,
   ColumnsData,
   Slot,
+  TitleData,
+  SubtitleData,
+  ParagraphData,
+  ImageData,
+  GalleryData,
+  VideoData,
+  ButtonData,
+  SlideshowData,
 } from "@/lib/blocks/types";
+
+import {
+  isTitleData,
+  isSubtitleData,
+  isParagraphData,
+  isImageData,
+  isGalleryData,
+  isVideoData,
+  isColumnsData,
+  isButtonData,
+  isSlideshowData,
+} from "@/lib/blocks/types";
+
 import { DefaultData } from "@/lib/blocks/types";
 
 /* ------------------------------ Helpers ------------------------------ */
@@ -83,16 +104,10 @@ function useDebounce<Args extends unknown[]>(
 }
 
 function DropZone({ id }: { id: ContainerId }) {
-  const { setNodeRef, isOver } = useDroppable({ id });
-  return (
-    <div
-      ref={setNodeRef}
-      className={`min-h-8 rounded border border-dashed ${
-        isOver ? "bg-neutral-100" : "bg-transparent"
-      }`}
-    />
-  );
+  const { setNodeRef } = useDroppable({ id });
+  return <div ref={setNodeRef} className="min-h-0" />;
 }
+
 
 function SortableItem({
   block,
@@ -118,19 +133,22 @@ function SortableItem({
         <span className="cursor-grab select-none" {...attributes} {...listeners}>
           ↕ Drag
         </span>
-        <button onClick={onDelete} className="text-red-600">
+        <button type="button" onClick={onDelete} className="text-red-600">
           Delete
         </button>
       </div>
 
       <div className="mt-3 space-y-3">
-        {block.block_type === "title" && (
+        {block.block_type === "title" && isTitleData(block) && (
           <>
             <input
               className="w-full rounded border p-2 text-xl font-bold text-black"
-              value={(block.data as any).text}
+              value={block.data.text}
               onChange={(e) =>
-                debounced({ ...block, data: { ...(block.data as any), text: e.target.value } })
+                debounced({
+                  ...block,
+                  data: { ...block.data, text: e.target.value } as TitleData
+                })
               }
               placeholder="Page title"
             />
@@ -138,76 +156,232 @@ function SortableItem({
           </>
         )}
 
-        {block.block_type === "subtitle" && (
+        {block.block_type === "subtitle" && isSubtitleData(block) && (
           <input
             className="w-full rounded border p-2 text-lg text-black"
-            value={(block.data as any).text}
+            value={block.data.text}
             onChange={(e) =>
-              debounced({ ...block, data: { ...(block.data as any), text: e.target.value } })
+              debounced({
+                ...block,
+                data: { ...block.data, text: e.target.value } as SubtitleData
+              })
             }
             placeholder="Subtitle"
           />
         )}
 
-        {block.block_type === "paragraph" && (
+        {block.block_type === "paragraph" && isParagraphData(block) && (
           <textarea
             className="w-full min-h-28 rounded border p-2 text-black"
-            value={(block.data as any).html}
+            value={block.data.html}
             onChange={(e) =>
-              debounced({ ...block, data: { ...(block.data as any), html: e.target.value } })
+              debounced({
+                ...block,
+                data: { ...block.data, html: e.target.value } as ParagraphData
+              })
             }
             placeholder="Write a paragraph…"
           />
         )}
 
-        {block.block_type === "image" && (
+        {block.block_type === "image" && isImageData(block) && (
           <div className="space-y-2">
             <input
               className="w-full rounded border p-2 text-black"
-              value={(block.data as any).path}
+              value={block.data.path}
               onChange={(e) =>
-                debounced({ ...block, data: { ...(block.data as any), path: e.target.value } })
+                debounced({
+                  ...block,
+                  data: { ...block.data, path: e.target.value } as ImageData
+                })
               }
               placeholder="Storage path (e.g. uploads/hero.png)"
             />
             <input
               className="w-full rounded border p-2 text-black"
-              value={(block.data as any).alt}
+              value={block.data.alt}
               onChange={(e) =>
-                debounced({ ...block, data: { ...(block.data as any), alt: e.target.value } })
+                debounced({
+                  ...block,
+                  data: { ...block.data, alt: e.target.value } as ImageData
+                })
               }
               placeholder="Alt text"
             />
           </div>
         )}
 
-        {block.block_type === "gallery" && (
+        {block.block_type === "gallery" && isGalleryData(block) && (
           <div className="space-y-2">
-            <textarea
+            {/* Existing items */}
+            {(block.data.paths ?? []).map((p, i) => (
+              <div key={i} className="flex gap-2">
+                <input
+                  className="flex-1 rounded border p-2 text-black"
+                  value={p}
+                  onChange={(e) => {
+                    const paths = [...(block.data.paths ?? [])];
+                    paths[i] = e.target.value;
+                    debounced({ ...block, data: { ...block.data, paths } as GalleryData });
+                  }}
+                  placeholder="https://example.com/img.jpg or uploads/hero.png"
+                />
+                <button
+                  type="button"
+                  className="rounded border px-2 text-sm"
+                  onClick={() => {
+                    const paths = [...(block.data.paths ?? [])];
+                    paths.splice(i, 1);
+                    debounced({ ...block, data: { ...block.data, paths } as GalleryData });
+                  }}
+                  aria-label="Remove image"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+
+            <input
               className="w-full rounded border p-2 text-black"
-              value={((block.data as any).paths ?? []).join("\n")}
-              onChange={(e) =>
-                debounced({
-                  ...block,
-                  data: { ...(block.data as any), paths: e.target.value.split("\n").filter(Boolean) },
-                })
-              }
-              placeholder={"One image path per line\nuploads/a.png\nuploads/b.png"}
+              placeholder="Type or paste URLs; press Enter to add (multi-line paste supported)"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const v = (e.currentTarget.value || "").trim();
+                  if (v) {
+                    const paths = [...(block.data.paths ?? []), v];
+                    debounced({ ...block, data: { ...block.data, paths } as GalleryData });
+                    e.currentTarget.value = "";
+                  }
+                }
+              }}
+              onPaste={(e) => {
+                const text = e.clipboardData.getData("text");
+                if (/\r?\n/.test(text)) {
+                  e.preventDefault();
+                  const lines = text
+                    .split(/\r?\n/)
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+                  if (lines.length) {
+                    const paths = [...(block.data.paths ?? []), ...lines];
+                    debounced({ ...block, data: { ...block.data, paths } as GalleryData });
+                  }
+                }
+              }}
             />
-            <div className="text-xs text-neutral-500">Displays in a responsive row.</div>
+
+            <div className="text-xs text-neutral-500">
+              Tip: Enter, <kbd>Ctrl</kbd>+Enter, or <kbd>Shift</kbd>+Enter will add; multi-line paste adds all.
+            </div>
           </div>
         )}
 
-        {block.block_type === "video_youtube" && (
+
+        {block.block_type === "video_youtube" && isVideoData(block) && (
           <input
             className="w-full rounded border p-2 text-black"
-            value={(block.data as any).url}
+            value={block.data.url}
             onChange={(e) =>
-              debounced({ ...block, data: { ...(block.data as any), url: e.target.value } })
+              debounced({
+                ...block,
+                data: { ...block.data, url: e.target.value } as VideoData
+              })
             }
             placeholder="YouTube URL"
           />
         )}
+
+        {block.block_type === "button" && isButtonData(block) && (
+          <div className="space-y-2">
+            <input
+              className="w-full rounded border p-2 text-black"
+              value={block.data.text}
+              onChange={(e) =>
+                debounced({
+                  ...block,
+                  data: { ...block.data, text: e.target.value } as ButtonData,
+                })
+              }
+              placeholder="Button label (e.g., View Project)"
+            />
+            <input
+              className="w-full rounded border p-2 text-black"
+              value={block.data.href}
+              onChange={(e) =>
+                debounced({
+                  ...block,
+                  data: { ...block.data, href: e.target.value } as ButtonData,
+                })
+              }
+              placeholder="Link (e.g., /projects/mymuse or https://...)"
+            />
+            <div className="text-xs text-neutral-500">
+              Tip: use internal paths (e.g. <code>/about</code>) for same-site links.
+            </div>
+          </div>
+        )}
+
+        {block.block_type === "slideshow" && isSlideshowData(block) && (
+          <div className="space-y-2">
+            {(block.data.paths ?? []).map((p, i) => (
+              <div key={i} className="flex gap-2">
+                <input
+                  className="flex-1 rounded border p-2 text-black"
+                  value={p}
+                  onChange={(e) => {
+                    const paths = [...(block.data.paths ?? [])];
+                    paths[i] = e.target.value;
+                    debounced({ ...block, data: { ...block.data, paths } as SlideshowData });
+                  }}
+                  placeholder="uploads/slide-1.jpg or https://..."
+                />
+                <button
+                  type="button"
+                  className="rounded border px-2 text-sm"
+                  onClick={() => {
+                    const paths = [...(block.data.paths ?? [])];
+                    paths.splice(i, 1);
+                    debounced({ ...block, data: { ...block.data, paths } as SlideshowData });
+                  }}
+                  aria-label="Remove image"
+                >
+                  x
+                </button>
+              </div>
+            ))}
+
+            <input
+              className="w-full rounded border p-2 text-black"
+              placeholder="Type or paste URLs; press Enter to add"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const v = (e.currentTarget.value || "").trim();
+                  if (v) {
+                    const paths = [...(block.data.paths ?? []), v];
+                    debounced({ ...block, data: { ...block.data, paths } as SlideshowData });
+                    e.currentTarget.value = "";
+                  }
+                }
+              }}
+              onPaste={(e) => {
+                const text = e.clipboardData.getData("text");
+                if (/\r?\n/.test(text)) {
+                  e.preventDefault();
+                  const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+                  if (lines.length) {
+                    const paths = [...(block.data.paths ?? []), ...lines];
+                    debounced({ ...block, data: { ...block.data, paths } as SlideshowData });
+                  }
+                }
+              }}
+            />
+
+            <div className="text-xs text-neutral-500">This renders as a sliding carousel.</div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -221,11 +395,14 @@ function AddRow({ onAdd }: { onAdd: (t: BlockType) => void }) {
     "image",
     "gallery",
     "video_youtube",
+    "button",
+    "slideshow"
   ];
   return (
     <div className="flex flex-wrap gap-2">
       {types.map((t) => (
         <button
+          type="button"
           key={t}
           className="rounded-2xl border bg-white px-3 py-2 text-sm text-black"
           onClick={() => onAdd(t)}
@@ -252,7 +429,9 @@ function ColumnsEditor({
   addChild: (parentId: string, slot: "left" | "right", t: BlockType) => void;
   del: (id: string) => void;
 }) {
-  const cols = (block.data as ColumnsData).columns;
+  if (!isColumnsData(block)) return null;
+
+  const cols = block.data.columns;
   const left = allBlocks
     .filter((x) => x.parent_id === block.id && x.slot === "left")
     .sort((a, b) => a.position - b.position);
@@ -264,7 +443,7 @@ function ColumnsEditor({
     <div className="rounded-xl border bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between text-sm text-neutral-500 mb-3">
         <span className="select-none">↕ Drag</span>
-        <button onClick={onDelete} className="text-red-600">
+        <button type="button" onClick={onDelete} className="text-red-600">
           Delete
         </button>
       </div>
@@ -275,7 +454,10 @@ function ColumnsEditor({
           className="rounded border p-1 text-black"
           value={cols}
           onChange={(e) =>
-            onChange({ ...block, data: { columns: Number(e.target.value) as 1 | 2 } })
+            onChange({
+              ...block,
+              data: { columns: Number(e.target.value) as 1 | 2 } as ColumnsData
+            })
           }
         >
           <option value={1}>1</option>
@@ -477,9 +659,12 @@ export default function BlockEditor({
             "gallery",
             "video_youtube",
             "columns",
+            "button",
+            "slideshow",
           ] as BlockType[]
         ).map((t) => (
           <button
+            type="button"
             key={t}
             className="rounded-2xl border bg-white px-3 py-2 text-sm text-black"
             onClick={() =>

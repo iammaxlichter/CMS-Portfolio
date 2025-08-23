@@ -1,12 +1,18 @@
+// app/admin/[id]/page.tsx (enhanced version)
 import { createClient } from "@/lib/supabase/server";
 import BlockEditor from "@/components/admin/BlockEditor";
 import Link from "next/link";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
-export default async function EditPage({ params }: { params: { id: string } }) {
-
+export default async function EditPage({ 
+  params 
+}: { 
+  params: Promise<{ id: string }> 
+}) {
   const { id } = await params;
 
-   const supabase = await createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -19,17 +25,17 @@ export default async function EditPage({ params }: { params: { id: string } }) {
     .maybeSingle();
   if (!profile || profile.role !== "admin") return null;
 
-  const { data: page } = await supabase.from("pages").select("*").eq("id", id).maybeSingle();
+  const { data: page } = await supabase
+    .from("pages")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
 
-  // app/admin/[id]/page.tsx  (example)
   const { data: blocks } = await supabase
     .from("content_blocks")
     .select("id,page_id,block_type,data,position,parent_id,slot")
     .eq("page_id", id)
     .order("position", { ascending: true });
-
-  // pass to editor:
-  <BlockEditor pageId={params.id} initial={blocks ?? []} />
 
   return (
     <main className="mx-auto max-w-4xl p-6 space-y-6">
@@ -45,19 +51,46 @@ export default async function EditPage({ params }: { params: { id: string } }) {
         <input
           name="title"
           defaultValue={page?.title}
+          placeholder="Page title"
           className="w-full rounded border p-2"
         />
         <input
           name="slug"
           defaultValue={page?.slug}
+          placeholder="Page slug"
           className="w-full rounded border p-2"
         />
+        
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">Page Type:</label>
+          <div className="flex gap-4">
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="kind"
+                value="project"
+                defaultChecked={page?.kind === "project"}
+              />
+              Project
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="kind"
+                value="experience"
+                defaultChecked={page?.kind === "experience"}
+              />
+              Experience
+            </label>
+          </div>
+        </div>
+
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
             name="published"
             defaultChecked={page?.published}
-          />{" "}
+          />
           Published
         </label>
         <button className="rounded bg-black text-white px-3 py-2 hover:bg-neutral-800">
@@ -67,7 +100,7 @@ export default async function EditPage({ params }: { params: { id: string } }) {
 
       <section>
         <h2 className="mb-2 text-lg font-semibold">Content</h2>
-        <BlockEditor pageId={params.id} initial={blocks ?? []} />
+        <BlockEditor pageId={id} initial={blocks ?? []} />
       </section>
     </main>
   );
@@ -79,6 +112,12 @@ async function saveMeta(formData: FormData) {
   const id = String(formData.get("id"));
   const title = String(formData.get("title"));
   const slug = String(formData.get("slug"));
+  const kind = String(formData.get("kind"));
   const published = !!formData.get("published");
-  await supabase.from("pages").update({ title, slug, published }).eq("id", id);
+
+  await supabase.from("pages").update({ title, slug, kind, published }).eq("id", id);
+
+  revalidatePath(`/admin/${id}`);
+  revalidatePath("/"); // This will refresh the navbar
+  redirect(`/admin/${id}`);
 }
