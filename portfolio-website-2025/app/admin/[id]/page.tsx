@@ -1,4 +1,4 @@
-// app/admin/[id]/page.tsx (enhanced version)
+// app/admin/[id]/page.tsx 
 import { createClient } from "@/lib/supabase/server";
 import BlockEditor from "@/components/admin/BlockEditor";
 import Link from "next/link";
@@ -63,7 +63,7 @@ export default async function EditPage({
         
         <div className="space-y-2">
           <label className="block text-sm font-medium">Page Type:</label>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="radio"
@@ -81,6 +81,24 @@ export default async function EditPage({
                 defaultChecked={page?.kind === "experience"}
               />
               Experience
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="kind"
+                value="additional"
+                defaultChecked={page?.kind === "additional"}
+              />
+              Additional
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="kind"
+                value="standalone"
+                defaultChecked={page?.kind === "standalone"}
+              />
+              Standalone
             </label>
           </div>
         </div>
@@ -109,15 +127,31 @@ export default async function EditPage({
 async function saveMeta(formData: FormData) {
   "use server";
   const supabase = await (await import("@/lib/supabase/server")).createClient();
+  
   const id = String(formData.get("id"));
   const title = String(formData.get("title"));
   const slug = String(formData.get("slug"));
-  const kind = String(formData.get("kind"));
+  const rawKind = String(formData.get("kind"));
   const published = !!formData.get("published");
 
-  await supabase.from("pages").update({ title, slug, kind, published }).eq("id", id);
+  // Validate the kind field
+  const allowedKinds = new Set(["project", "experience", "additional", "standalone"]);
+  const kind = allowedKinds.has(rawKind) ? rawKind as "project" | "experience" | "additional" | "standalone" : "standalone";
 
+  await supabase
+    .from("pages")
+    .update({ title, slug, kind, published })
+    .eq("id", id);
+
+  // Revalidate all relevant paths
   revalidatePath(`/admin/${id}`);
-  revalidatePath("/"); // This will refresh the navbar
+  revalidatePath("/admin"); // Admin list page
+  revalidatePath("/"); // Homepage/navbar
+  
+  // Also revalidate the specific page route if it's published
+  if (published && slug) {
+    revalidatePath(`/${slug}`);
+  }
+  
   redirect(`/admin/${id}`);
 }

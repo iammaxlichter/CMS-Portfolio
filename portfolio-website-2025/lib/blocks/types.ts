@@ -8,8 +8,13 @@ export type BlockType =
   | "video_youtube"
   | "columns"
   | "button"
-  | "slideshow"; 
+  | "slideshow"
+  | "date"
+  | "card_grid";
 
+
+export type CardItem = { title: string; href: string; img: string; caption?: string; };
+export type CardGridData = { items: CardItem[] };
 export type TitleData = { text: string };
 export type SubtitleData = { text: string };
 export type ParagraphData = { html: string };
@@ -19,6 +24,7 @@ export type VideoData = { url: string };
 export type ColumnsData = { columns: 1 | 2 };
 export type ButtonData = { text: string; href: string };
 export type SlideshowData = { paths: string[] };
+export type DateData = { text: string; align?: "left" | "center" | "right" };
 
 export type BlockData =
   | TitleData
@@ -30,6 +36,8 @@ export type BlockData =
   | ColumnsData
   | ButtonData
   | SlideshowData
+  | DateData
+  | CardGridData;
 
 export type Slot = "left" | "right" | null;
 
@@ -53,6 +61,8 @@ export const DefaultData: Record<BlockType, BlockData> = {
   columns: { columns: 2 },
   button: { text: "Learn more", href: "/" },
   slideshow: { paths: [] },
+  date: { text: "Feb. 2025 – Present", align: "right" },
+  card_grid: { items: [] },
 };
 
 // Type guard functions
@@ -90,4 +100,12 @@ export function isButtonData(block: Block): block is Block & { data: ButtonData 
 
 export function isSlideshowData(block: Block): block is Block & { data: SlideshowData } {
   return block.block_type === "slideshow";
+}
+
+export function isDateData(block: Block): block is Block & { data: DateData } {
+  return block.block_type === "date";
+}
+
+export function isCardGridData(block: Block): block is Block & { data: CardGridData } {
+  return block.block_type === "card_grid";
 }

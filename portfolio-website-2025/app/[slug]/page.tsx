@@ -15,9 +15,11 @@ import {
   isColumnsData,
   isButtonData,
   isSlideshowData,
+  isDateData,
+  isCardGridData
 } from "@/lib/blocks/types";
 
-import Slideshow from "@/components/blocks/Slideshow";
+import Slideshow from "@/components/admin/blocks/Slideshow";
 
 
 function BlockView({ b }: { b: Block }) {
@@ -118,6 +120,52 @@ function BlockView({ b }: { b: Block }) {
       }
       return null;
 
+    case "date":
+      if (isDateData(b)) {
+        const align = b.data.align ?? "right";
+        const alignClass =
+          align === "center" ? "text-center"
+            : align === "right" ? "text-right"
+              : "text-left";
+
+        const displayClass = align === "right" ? "block ml-auto" : align === "center" ? "block mx-auto" : "block";
+
+        return (
+          <div className={`${displayClass} ${alignClass} text-red-500 italic`}>
+            {b.data.text}
+          </div>
+        );
+      }
+      return null;
+
+
+    case "card_grid":
+      if (isCardGridData(b)) {
+        const items = b.data.items ?? [];
+        return (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {items.map((it, i) => {
+              const src = /^https?:\/\//i.test(it.img) ? it.img : `/${it.img}`;
+              const href = it.href || "#";
+              const isExternal = /^https?:\/\//i.test(href);
+              return (
+                <a
+                  key={i}
+                  href={href}
+                  {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  className="group block"
+                >
+                  {/* If you only use local images, Next/Image is fine; for mixed external, plain <img> avoids domain config */}
+                  <img src={src} alt={it.title || ""} className="h-auto w-full rounded-lg border transition group-hover:opacity-90" />
+                  <div className="mt-2 font-medium">{it.title}</div>
+                  {it.caption && <div className="text-sm text-neutral-500">{it.caption}</div>}
+                </a>
+              );
+            })}
+          </div>
+        );
+      }
+      return null;
 
     default:
       return null;

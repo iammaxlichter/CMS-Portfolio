@@ -34,6 +34,9 @@ import type {
   VideoData,
   ButtonData,
   SlideshowData,
+  DateData,
+  CardGridData,
+  CardItem
 } from "@/lib/blocks/types";
 
 import {
@@ -46,6 +49,8 @@ import {
   isColumnsData,
   isButtonData,
   isSlideshowData,
+  isDateData,
+  isCardGridData
 } from "@/lib/blocks/types";
 
 import { DefaultData } from "@/lib/blocks/types";
@@ -382,6 +387,141 @@ function SortableItem({
           </div>
         )}
 
+        {block.block_type === "date" && isDateData(block) && (
+          <div className="space-y-2">
+            <input
+              className="w-full rounded border p-2 text-black"
+              value={block.data.text}
+              onChange={(e) =>
+                debounced({
+                  ...block,
+                  data: { ...block.data, text: e.target.value } as DateData,
+                })
+              }
+              placeholder="Month Year - Month Year"
+            />
+            <label className="text-sm text-black flex items-center gap-2">
+              Align:
+              <select
+                className="rounded border p-1 text-black"
+                value={block.data.align ?? "right"}
+                onChange={(e) =>
+                  debounced({
+                    ...block,
+                    data: { ...block.data, align: e.target.value as DateData["align"] } as DateData,
+                  })
+                }
+              >
+                <option value="left">Left</option>
+                <option value="center">Center</option>
+                <option value="right">Right</option>
+              </select>
+            </label>
+            <div className="text-xs text-neutral-500">
+              Renders in red italics; use alignment or place inside a right column if you prefer.
+            </div>
+          </div>
+        )}
+
+        {block.block_type === "card_grid" && isCardGridData(block) && (
+          <div className="space-y-3">
+            {(block.data.items ?? []).map((it, i) => (
+              <div key={i} className="rounded border p-3">
+                <div className="grid gap-2 md:grid-cols-2">
+                  <input
+                    className="rounded border p-2 text-black"
+                    value={it.title}
+                    placeholder="Card title"
+                    onChange={(e) => {
+                      const items = [...(block.data.items ?? [])];
+                      items[i] = { ...items[i], title: e.target.value };
+                      debounced({ ...block, data: { ...(block.data as CardGridData), items } as CardGridData });
+                    }}
+                  />
+                  <input
+                    className="rounded border p-2 text-black"
+                    value={it.href}
+                    placeholder="Link (/slug or https://...)"
+                    onChange={(e) => {
+                      const items = [...(block.data.items ?? [])];
+                      items[i] = { ...items[i], href: e.target.value };
+                      debounced({ ...block, data: { ...(block.data as CardGridData), items } as CardGridData });
+                    }}
+                  />
+                  <input
+                    className="rounded border p-2 text-black md:col-span-2"
+                    value={it.img}
+                    placeholder="Thumbnail (uploads/thumb.jpg or https://...)"
+                    onChange={(e) => {
+                      const items = [...(block.data.items ?? [])];
+                      items[i] = { ...items[i], img: e.target.value };
+                      debounced({ ...block, data: { ...(block.data as CardGridData), items } as CardGridData });
+                    }}
+                  />
+                  <input
+                    className="rounded border p-2 text-black md:col-span-2"
+                    value={it.caption ?? ""}
+                    placeholder="Optional caption"
+                    onChange={(e) => {
+                      const items = [...(block.data.items ?? [])];
+                      items[i] = { ...items[i], caption: e.target.value };
+                      debounced({ ...block, data: { ...(block.data as CardGridData), items } as CardGridData });
+                    }}
+                  />
+                </div>
+
+                <div className="mt-2 flex gap-2">
+                  <button
+                    type="button"
+                    className="rounded border px-2 text-sm"
+                    onClick={() => {
+                      const items = [...(block.data.items ?? [])];
+                      if (i > 0) [items[i - 1], items[i]] = [items[i], items[i - 1]];
+                      debounced({ ...block, data: { ...(block.data as CardGridData), items } as CardGridData });
+                    }}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded border px-2 text-sm"
+                    onClick={() => {
+                      const items = [...(block.data.items ?? [])];
+                      if (i < items.length - 1) [items[i + 1], items[i]] = [items[i], items[i + 1]];
+                      debounced({ ...block, data: { ...(block.data as CardGridData), items } as CardGridData });
+                    }}
+                  >
+                    ↓
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded border px-2 text-sm text-red-600"
+                    onClick={() => {
+                      const items = [...(block.data.items ?? [])];
+                      items.splice(i, 1);
+                      debounced({ ...block, data: { ...(block.data as CardGridData), items } as CardGridData });
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              className="rounded border px-3 py-2 text-sm"
+              onClick={() => {
+                const items = [...(block.data.items ?? []), { title: "", href: "", img: "", caption: "" } as CardItem];
+                debounced({ ...block, data: { ...(block.data as CardGridData), items } as CardGridData });
+              }}
+            >
+              + Add card
+            </button>
+
+            <div className="text-xs text-neutral-500">Cards render in a responsive grid and link to the provided URL.</div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -396,7 +536,9 @@ function AddRow({ onAdd }: { onAdd: (t: BlockType) => void }) {
     "gallery",
     "video_youtube",
     "button",
-    "slideshow"
+    "slideshow",
+    "date",
+    "card_grid"
   ];
   return (
     <div className="flex flex-wrap gap-2">
@@ -661,6 +803,8 @@ export default function BlockEditor({
             "columns",
             "button",
             "slideshow",
+            "date",
+            "card_grid",
           ] as BlockType[]
         ).map((t) => (
           <button

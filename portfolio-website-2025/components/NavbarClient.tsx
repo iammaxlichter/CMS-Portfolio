@@ -1,3 +1,5 @@
+// components/NavbarClient.tsx
+
 "use client";
 
 import Link from "next/link";
@@ -17,12 +19,12 @@ function Dropdown({ label, items }: { label: string; items: Item[] }) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement | null>(null);
 
+  // close on Esc + outside click (keep these)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
-
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       if (!btnRef.current) return;
@@ -33,23 +35,30 @@ function Dropdown({ label, items }: { label: string; items: Item[] }) {
   }, []);
 
   return (
-    <div className="relative" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+    <div
+      className="relative"                    // contains both button and menu
+      onMouseEnter={() => setOpen(true)}      // open on hover
+      onMouseLeave={() => setOpen(false)}     // close when leaving BOTH
+    >
       <button
         type="button"
         ref={btnRef}
         className="inline-flex items-center gap-1 px-3 py-2 hover:text-white/90"
         aria-haspopup="menu"
         aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => setOpen((v) => !v)}    // also supports click
       >
         {label}
         <CaretDown />
       </button>
 
+      {/* sit flush: no vertical gap */}
       <div
         role="menu"
-        className={`absolute left-0 mt-3 min-w-48 rounded-lg bg-black backdrop-blur p-1 shadow-lg transition
-          ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"}`}
+        className={`absolute left-0 top-full z-50 min-w-48 rounded-lg
+          bg-black backdrop-blur p-1 shadow-lg transition
+          ${open ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 -translate-y-1 pointer-events-none"}`}
       >
         {items.map((it) => (
           <Link
@@ -63,16 +72,23 @@ function Dropdown({ label, items }: { label: string; items: Item[] }) {
           </Link>
         ))}
       </div>
+
+      {/* optional tiny 'hover bridge' if your theme adds borders causing gaps */}
+      {/* <div className="absolute left-0 right-0 top-full h-2" /> */}
     </div>
   );
 }
 
+
 export default function NavbarClient({
   projects,
   experience,
+  standalones = [],
+
 }: {
   projects: Item[];
   experience: Item[];
+  standalones?: Item[];
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -90,8 +106,11 @@ export default function NavbarClient({
           <Link href="/" className="px-3 py-2 hover:text-white/90">Home</Link>
           <Dropdown label="Projects" items={projects} />
           <Dropdown label="Experience" items={experience} />
-          <Link href="/resume" className="px-3 py-2 hover:text-white/90">Resume</Link>
-          <Link href="/contact" className="px-3 py-2 hover:text-white/90">Contact</Link>
+          {standalones.map((it) => (
+            <Link key={it.href} href={it.href} className="px-3 py-2 hover:text-white/90">
+              {it.label}
+            </Link>
+          ))}
         </div>
 
         <button
@@ -141,8 +160,16 @@ export default function NavbarClient({
             </div>
           </details>
 
-          <Link href="/resume" className="block rounded px-3 py-2 hover:bg-white/10" onClick={() => setMobileOpen(false)}>Resume</Link>
-          <Link href="/contact" className="block rounded px-3 py-2 hover:bg-white/10" onClick={() => setMobileOpen(false)}>Contact</Link>
+          {standalones.map((it) => (
+            <Link
+              key={`m-standalone-${it.href}`}
+              href={it.href}
+              className="block rounded px-3 py-2 hover:bg-white/10"
+              onClick={() => setMobileOpen(false)}
+            >
+              {it.label}
+            </Link>
+          ))}
         </div>
       )}
     </header>
