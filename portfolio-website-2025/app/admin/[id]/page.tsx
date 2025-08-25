@@ -5,10 +5,10 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export default async function EditPage({ 
-  params 
-}: { 
-  params: Promise<{ id: string }> 
+export default async function EditPage({
+  params
+}: {
+  params: Promise<{ id: string }>
 }) {
   const { id } = await params;
 
@@ -46,6 +46,9 @@ export default async function EditPage({
         ← Back to Admin
       </Link>
 
+      
+
+
       <form action={saveMeta} className="space-y-3">
         <input type="hidden" name="id" defaultValue={page?.id} />
         <input
@@ -60,7 +63,7 @@ export default async function EditPage({
           placeholder="Page slug"
           className="w-full rounded border p-2"
         />
-        
+
         <div className="space-y-2">
           <label className="block text-sm font-medium">Page Type:</label>
           <div className="flex flex-wrap gap-4">
@@ -127,7 +130,7 @@ export default async function EditPage({
 async function saveMeta(formData: FormData) {
   "use server";
   const supabase = await (await import("@/lib/supabase/server")).createClient();
-  
+
   const id = String(formData.get("id"));
   const title = String(formData.get("title"));
   const slug = String(formData.get("slug"));
@@ -147,11 +150,11 @@ async function saveMeta(formData: FormData) {
   revalidatePath(`/admin/${id}`);
   revalidatePath("/admin"); // Admin list page
   revalidatePath("/"); // Homepage/navbar
-  
+
   // Also revalidate the specific page route if it's published
   if (published && slug) {
     revalidatePath(`/${slug}`);
   }
-  
+
   redirect(`/admin/${id}`);
 }

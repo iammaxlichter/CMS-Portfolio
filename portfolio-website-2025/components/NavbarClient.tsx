@@ -4,6 +4,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 function CaretDown({ className = "h-3 w-3" }: { className?: string }) {
   return (
@@ -55,8 +56,7 @@ function Dropdown({ label, items }: { label: string; items: Item[] }) {
       {/* sit flush: no vertical gap */}
       <div
         role="menu"
-        className={`absolute left-0 top-full z-50 min-w-48 rounded-lg
-          bg-black backdrop-blur p-1 shadow-lg transition
+        className={`absolute left-0 top-full z-50 min-w-48 rounded-lg bg-[#343330]  p-1 shadow-lg transition
           ${open ? "opacity-100 translate-y-0 pointer-events-auto"
             : "opacity-0 -translate-y-1 pointer-events-none"}`}
       >
@@ -93,12 +93,17 @@ export default function NavbarClient({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-neutral-800 text-white">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6" aria-label="Main">
+    <header className="sticky top-0 z-50 bg-[#343330] text-white">
+      <nav className="mx-auto flex max-w-7xl items-center text-[15px] justify-between px-4 py-4.5 mr-4 ml-4 md:px-6" aria-label="Main">
         <Link href="/" className="inline-flex items-center gap-2 font-semibold">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded bg-white text-neutral-900 font-bold">
-            ML
-          </span>
+          <Image
+            src="/images/other/logoWhite.png"
+            alt="Your Logo"
+            width={64}
+            height={48}
+            className="d-inline-block align-top"
+            priority
+          />
           <span className="sr-only">Home</span>
         </Link>
 
@@ -116,18 +121,19 @@ export default function NavbarClient({
         <button
           type="button"
           onClick={() => setMobileOpen((v) => !v)}
-          className="md:hidden inline-flex items-center justify-center rounded p-2 hover:bg-white/10"
+          className="md:hidden inline-flex flex-col items-center justify-center rounded p-2 hover:bg-white/10"
           aria-label="Toggle menu"
           aria-expanded={mobileOpen}
         >
-          <span className="block h-0.5 w-6 bg-white"></span>
-          <span className="mt-1 block h-0.5 w-6 bg-white"></span>
-          <span className="mt-1 block h-0.5 w-6 bg-white"></span>
+          <span className="block h-0.5 w-6 bg-white" />
+          <span className="block h-0.5 w-6 bg-white my-1" />
+          <span className="block h-0.5 w-6 bg-white" />
         </button>
+
       </nav>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-white/10 bg-neutral-800 px-4 py-3 space-y-1">
+        <div className="md:hidden border-t border-white/10 bg-[#343330] px-4 py-3 space-y-1">
           <Link href="/" className="block rounded px-3 py-2 hover:bg-white/10" onClick={() => setMobileOpen(false)}>
             Home
           </Link>

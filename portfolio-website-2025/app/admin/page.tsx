@@ -1,30 +1,48 @@
 // app/admin/page.tsx
-import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
-import { revalidatePath } from "next/cache";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import NavOrderBoard from "@/components/admin/NavOrderBoard";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminHome() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/signin');
+  if (!user) redirect("/signin");
 
-  const { data: profile } = await supabase.from('profiles')
-    .select('role').eq('id', user.id).maybeSingle();
-  if (!profile || profile.role !== 'admin') redirect('/');
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (!profile || profile.role !== "admin") redirect("/");
 
   const { data: pages } = await supabase
-    .from('pages')
-    .select('id, title, slug, kind, published, created_at, nav_order')
-    .order('created_at', { ascending: false });
+    .from("pages")
+    .select("id, title, slug, kind, published, created_at, nav_order")
+    .order("created_at", { ascending: false });
 
   return (
     <main className="mx-auto max-w-4xl p-6 space-y-8">
+      {/* Quick tools */}
+      <div className="flex gap-2">
+        <Link
+          href="/admin/resume"
+          className="inline-block rounded bg-[#343330] px-3 py-2 text-white text-sm hover:bg-black"
+        >
+          Manage Resume
+        </Link>
+        <Link
+          href="/admin/reorder"
+          className="inline-block rounded bg-[#343330] px-3 py-2 text-white text-sm hover:bg-black"
+        >
+          Reorder Navbar
+        </Link>
+      </div>
+
       <h1 className="text-2xl font-semibold">Admin · Pages</h1>
 
+      {/* Create page */}
       <form action={createPage} className="flex flex-wrap items-center gap-3">
         <input name="title" placeholder="Page title" className="rounded border p-2" required />
         <input name="slug" placeholder="slug (e.g. my-project)" className="rounded border p-2" required />
@@ -45,8 +63,7 @@ export default async function AdminHome() {
         <button className="rounded bg-black px-3 py-2 text-white">Create</button>
       </form>
 
-
-      {/* List (unchanged) */}
+      {/* List */}
       <ul className="divide-y rounded border bg-white">
         {(pages ?? []).map((p) => (
           <li key={p.id} className="p-4 flex items-center justify-between">
@@ -72,15 +89,6 @@ export default async function AdminHome() {
           <li className="p-4 text-sm text-neutral-500">No pages yet — create one above.</li>
         )}
       </ul>
-
-      {/* NEW: Reorder board */}
-      <section>
-        <h2 className="mb-2 text-lg font-semibold">Reorder items in the navbar</h2>
-        <p className="mb-3 text-sm text-neutral-500">
-          Drag items to change order inside Projects and Experience. Only published pages appear in the menus.
-        </p>
-        <NavOrderBoard initialPages={(pages ?? []) as any} action={saveNavOrder} />
-      </section>
     </main>
   );
 }
@@ -116,7 +124,6 @@ async function createPage(formData: FormData) {
   redirect("/admin");
 }
 
-
 async function deleteDraft(formData: FormData) {
   "use server";
   const supabase = await (await import("@/lib/supabase/server")).createClient();
@@ -136,25 +143,4 @@ async function deleteDraft(formData: FormData) {
   const { revalidatePath } = await import("next/cache");
   revalidatePath("/admin");
   revalidatePath("/");
-}
-
-async function saveNavOrder(formData: FormData) {
-  "use server";
-  const supabase = await (await import("@/lib/supabase/server")).createClient();
-
-  const projects    = JSON.parse(String(formData.get("projects") ?? "[]")) as string[];
-  const experience  = JSON.parse(String(formData.get("experience") ?? "[]")) as string[];
-  const standalones = JSON.parse(String(formData.get("standalones") ?? "[]")) as string[];
-
-  const updateGroup = async (ids: string[]) => {
-    for (let i = 0; i < ids.length; i++) {
-      await supabase.from("pages").update({ nav_order: i }).eq("id", ids[i]);
-    }
-  };
-
-  await Promise.all([updateGroup(projects), updateGroup(experience), updateGroup(standalones)]);
-
-  const { revalidatePath } = await import("next/cache");
-  revalidatePath("/");      // navbar
-  revalidatePath("/admin"); // board
 }

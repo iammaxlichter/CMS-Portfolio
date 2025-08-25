@@ -28,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
+        
       </head>
       <body className={`${libreFranklin.variable} antialiased`}>
         <Navbar />
