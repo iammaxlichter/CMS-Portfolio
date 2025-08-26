@@ -17,8 +17,25 @@ export type CardItem = { title: string; href: string; img: string; caption?: str
 export type CardGridData = { items: CardItem[] };
 export type TitleData = { text: string };
 export type SubtitleData = { text: string };
-export type ParagraphData = { html: string };
-export type ImageData = { path: string; alt: string };
+export type ParagraphData = {
+  html: string;
+  fontSize?: number;     
+  marginTop?: number;     
+  marginBottom?: number;  
+};
+export type ImageData = {
+  path: string;
+  alt: string;
+  displayMaxWidth?: number;
+  align?: "left" | "center" | "right";
+  captionAlign?: "left" | "center" | "right";
+  intrinsicWidth?: number;
+  intrinsicHeight?: number;
+  marginTop?: number;         
+  marginBottom?: number;      
+  captionMarginTop?: number;  
+  captionMarginBottom?: number;
+};
 export type GalleryData = { paths: string[] };
 export type VideoData = { url: string };
 export type ColumnsData = { columns: 1 | 2 };
@@ -54,8 +71,20 @@ export type Block = {
 export const DefaultData: Record<BlockType, BlockData> = {
   title: { text: "Title" },
   subtitle: { text: "Subtitle" },
-  paragraph: { html: "Write something…" },
-  image: { path: "", alt: "" },
+  paragraph: { html: "Write something…", fontSize: 16, marginTop: 16, marginBottom: 16 },
+  image: {
+    path: "",
+    alt: "",
+    displayMaxWidth: 1200,
+    align: "left",
+    captionAlign: "left",
+    intrinsicWidth: 1600,
+    intrinsicHeight: 900,
+    marginTop: 16,
+    marginBottom: 16,
+    captionMarginTop: 4,
+    captionMarginBottom: 4,
+  },
   gallery: { paths: [] },
   video_youtube: { url: "" },
   columns: { columns: 2 },

@@ -28,8 +28,6 @@ import type {
   Slot,
   TitleData,
   SubtitleData,
-  ParagraphData,
-  ImageData,
   GalleryData,
   VideoData,
   ButtonData,
@@ -53,6 +51,7 @@ import {
   isCardGridData
 } from "@/lib/blocks/types";
 
+import Paragraph from "@/components/admin/blocks/Paragraph";
 import { DefaultData } from "@/lib/blocks/types";
 
 /* ------------------------------ Helpers ------------------------------ */
@@ -176,17 +175,7 @@ function SortableItem({
         )}
 
         {block.block_type === "paragraph" && isParagraphData(block) && (
-          <textarea
-            className="w-full min-h-28 rounded border p-2 text-black"
-            value={block.data.html}
-            onChange={(e) =>
-              debounced({
-                ...block,
-                data: { ...block.data, html: e.target.value } as ParagraphData
-              })
-            }
-            placeholder="Write a paragraph…"
-          />
+          <Paragraph block={block} onChange={debounced} />
         )}
 
         {block.block_type === "image" && isImageData(block) && (
@@ -197,24 +186,179 @@ function SortableItem({
               onChange={(e) =>
                 debounced({
                   ...block,
-                  data: { ...block.data, path: e.target.value } as ImageData
+                  data: { ...block.data, path: e.target.value }
                 })
               }
               placeholder="Storage path (e.g. uploads/hero.png)"
             />
+
             <input
               className="w-full rounded border p-2 text-black"
               value={block.data.alt}
               onChange={(e) =>
                 debounced({
                   ...block,
-                  data: { ...block.data, alt: e.target.value } as ImageData
+                  data: { ...block.data, alt: e.target.value }
                 })
               }
-              placeholder="Alt text"
+              placeholder="Alt text (also used as caption)"
             />
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+              <label className="text-sm text-black flex flex-col gap-1">
+                Display max width (px)
+                <input
+                  type="number"
+                  min={200}
+                  className="rounded border p-2 text-black"
+                  value={block.data.displayMaxWidth ?? 1200}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: { ...block.data, displayMaxWidth: Number(e.target.value) || 0 }
+                    })
+                  }
+                  placeholder="e.g. 720"
+                />
+              </label>
+
+              <label className="text-sm text-black flex flex-col gap-1">
+                Align
+                <select
+                  className="rounded border p-2 text-black"
+                  value={block.data.align ?? "left"}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: { ...block.data, align: e.target.value as "left" | "center" | "right" }
+                    })
+                  }
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </label>
+
+              <label className="text-sm text-black flex flex-col gap-1">
+                Caption align
+                <select
+                  className="rounded border p-2 text-black"
+                  value={block.data.captionAlign ?? "left"}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: { ...block.data, captionAlign: e.target.value as "left" | "center" | "right" }
+                    })
+                  }
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <label className="text-sm text-black flex flex-col gap-1">
+                Intrinsic width (px)
+                <input
+                  type="number"
+                  className="rounded border p-2 text-black"
+                  value={block.data.intrinsicWidth ?? 1600}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: { ...block.data, intrinsicWidth: Number(e.target.value) || undefined }
+                    })
+                  }
+                  placeholder="e.g. 1600"
+                />
+              </label>
+
+              <label className="text-sm text-black flex flex-col gap-1">
+                Intrinsic height (px)
+                <input
+                  type="number"
+                  className="rounded border p-2 text-black"
+                  value={block.data.intrinsicHeight ?? 900}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: { ...block.data, intrinsicHeight: Number(e.target.value) || undefined }
+                    })
+                  }
+                  placeholder="e.g. 900"
+                />
+              </label>
+            </div>
+
+            <div className="text-xs text-neutral-500">
+              <b>Display max width</b> controls how large the image appears on the page (it’s still responsive).
+              Intrinsic size helps Next/Image pick the right resolution.
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <label className="text-sm text-black flex flex-col gap-1">
+                Image margin top (px)
+                <input
+                  type="number"
+                  className="rounded border p-2 text-black"
+                  value={block.data.marginTop ?? 16}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: { ...block.data, marginTop: Number(e.target.value) }
+                    })
+                  }
+                />
+              </label>
+              <label className="text-sm text-black flex flex-col gap-1">
+                Image margin bottom (px)
+                <input
+                  type="number"
+                  className="rounded border p-2 text-black"
+                  value={block.data.marginBottom ?? 16}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: { ...block.data, marginBottom: Number(e.target.value) }
+                    })
+                  }
+                />
+              </label>
+              <label className="text-sm text-black flex flex-col gap-1">
+                Caption margin top (px)
+                <input
+                  type="number"
+                  className="rounded border p-2 text-black"
+                  value={block.data.captionMarginTop ?? 4}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: { ...block.data, captionMarginTop: Number(e.target.value) }
+                    })
+                  }
+                />
+              </label>
+              <label className="text-sm text-black flex flex-col gap-1">
+                Caption margin bottom (px)
+                <input
+                  type="number"
+                  className="rounded border p-2 text-black"
+                  value={block.data.captionMarginBottom ?? 4}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: { ...block.data, captionMarginBottom: Number(e.target.value) }
+                    })
+                  }
+                />
+              </label>
+            </div>
+
           </div>
         )}
+
 
         {block.block_type === "gallery" && isGalleryData(block) && (
           <div className="space-y-2">

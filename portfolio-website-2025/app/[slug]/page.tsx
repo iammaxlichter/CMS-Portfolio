@@ -26,37 +26,83 @@ function BlockView({ b }: { b: Block }) {
   switch (b.block_type) {
     case "title":
       if (isTitleData(b)) {
-        return <h1 className="text-3xl md:text-4xl font-bold">{b.data.text}</h1>;
+        return <h1 className="text-[#343330] text-4xl sm:text-5xl md:text-6xl lg:text-[56px] font-bold">{b.data.text}</h1>;
       }
       return null;
     case "subtitle":
       if (isSubtitleData(b)) {
-        return <h2 className="text-xl md:text-2xl text-neutral-600">{b.data.text}</h2>;
+        return <h2 className="text-base sm:text-lg md:text-xl text-[#343330]">{b.data.text}</h2>;
       }
       return null;
+    // app/[slug]/page.tsx (inside case "paragraph")
     case "paragraph":
       if (isParagraphData(b)) {
+        const fs = b.data.fontSize ?? 16;
+        const mt = b.data.marginTop ?? 16;
+        const mb = b.data.marginBottom ?? 16;
+
         return (
           <div
-            className="prose max-w-none"
+            className="prose max-w-none prose-p:m-0"
+            style={{ fontSize: fs, marginTop: mt, marginBottom: mb }}
             dangerouslySetInnerHTML={{ __html: b.data.html }}
           />
         );
       }
       return null;
+
+    // app/[slug]/page.tsx
     case "image":
       if (isImageData(b)) {
+        const maxW = b.data.displayMaxWidth ?? 1200;
+        const align = b.data.align ?? "left";
+        const captionAlign = b.data.captionAlign ?? "left";
+
+        const iw = b.data.intrinsicWidth ?? 1600;
+        const ih = b.data.intrinsicHeight ?? 900;
+
+        const alignClass =
+          align === "center" ? "mx-auto"
+            : align === "right" ? "ml-auto"
+              : ""; // left = default
+
+        const captionClass =
+          captionAlign === "center" ? "text-center"
+            : captionAlign === "right" ? "text-right"
+              : "text-left";
+
         return (
-          <figure className="my-4">
-            <Image
-              src={`/${b.data.path}`}
-              alt={b.data.alt || ""}
-              width={1600}
-              height={900}
-              className="rounded-xl w-full h-auto"
-            />
+          <figure
+            className={`${alignClass}`}
+            style={{
+              maxWidth: `${maxW}px`,
+              marginTop: b.data.marginTop ?? 16,
+              marginBottom: b.data.marginBottom ?? 16,
+            }}
+          >
+            <div
+              style={{
+                marginTop: b.data.marginTop ?? 16,
+                marginBottom: b.data.marginBottom ?? 16,
+              }}
+            >
+              <Image
+                src={`/${b.data.path}`}
+                alt={b.data.alt || ""}
+                width={iw}
+                height={ih}
+                className="rounded-xl w-full h-auto"
+              />
+            </div>
+
             {b.data.alt && (
-              <figcaption className="text-sm text-neutral-500 mt-1">
+              <figcaption
+                className={`text-sm text-neutral-500 ${captionClass}`}
+                style={{
+                  marginTop: b.data.captionMarginTop ?? 4,
+                  marginBottom: b.data.captionMarginBottom ?? 4,
+                }}
+              >
                 {b.data.alt}
               </figcaption>
             )}
@@ -64,6 +110,8 @@ function BlockView({ b }: { b: Block }) {
         );
       }
       return null;
+
+
     case "gallery":
       if (isGalleryData(b)) {
         return (
@@ -131,7 +179,7 @@ function BlockView({ b }: { b: Block }) {
         const displayClass = align === "right" ? "block ml-auto" : align === "center" ? "block mx-auto" : "block";
 
         return (
-          <div className={`${displayClass} ${alignClass} text-red-500 italic`}>
+          <div className={`${displayClass} ${alignClass} text-base sm:text-lg md:text-xl text-[#9D231B] italic`}>
             {b.data.text}
           </div>
         );
@@ -242,7 +290,7 @@ export default async function Page({
   const root = all.filter((b) => !b.parent_id).sort((a, b) => a.position - b.position);
 
   return (
-    <main className="mx-auto max-w-3xl p-6 space-y-6">
+    <main className="mx-auto max-w-5xl p-6 mt-7 space-y-6">
       {root.map((b) =>
         b.block_type === "columns" ? (
           <ColumnsView key={b.id} block={b} all={all} />
