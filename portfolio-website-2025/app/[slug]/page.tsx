@@ -16,8 +16,27 @@ import {
   isCardGridData
 } from "@/lib/blocks/types";
 
+import type { AnimationSettings, WithAnim } from "@/lib/blocks/types";
 import Slideshow from "@/components/admin/blocks/Slideshow";
 import { JSX } from "react";
+
+const animClassMap = {
+  slideInLeft: "anim-slideInLeft",
+  slideInRight: "anim-slideInRight",
+  slideInTop: "anim-slideInTop",
+  slideInBottom: "anim-slideInBottom",
+  fadeIn: "anim-fadeIn",
+} as const;
+
+type AnimCSSVars = React.CSSProperties & {
+  ["--anim-dur"]?: string;
+  ["--anim-delay"]?: string;
+};
+
+function getAnim(b: Block): AnimationSettings | undefined {
+  return (b.data as WithAnim)._anim;
+}
+
 
 
 function BlockView({ b }: { b: Block }) {
@@ -25,6 +44,25 @@ function BlockView({ b }: { b: Block }) {
   const withPadding = (content: JSX.Element) => (
     <div className="sm:px-16">{content}</div>
   );
+
+  function wrapWithAnim(b: Block, el: JSX.Element) {
+  const a = getAnim(b);
+  if (!a?.type) return el;
+
+  const dur = a.durationMs ?? 600;
+  const delay = a.delayMs ?? 0;
+
+  const style: AnimCSSVars = {
+    "--anim-dur": `${dur}ms`,
+    "--anim-delay": `${delay}ms`,
+  };
+
+  return (
+    <div className={`anim-base ${animClassMap[a.type]}`} style={style}>
+      {el}
+    </div>
+  );
+}
 
   switch (b.block_type) {
     case "title":
@@ -45,12 +83,13 @@ function BlockView({ b }: { b: Block }) {
         const mb = b.data.marginBottom ?? 16;
 
         return withPadding(
+          wrapWithAnim(b,
           <div
             className="prose max-w-none prose-p:m-0"
             style={{ fontSize: fs, marginTop: mt, marginBottom: mb }}
             dangerouslySetInnerHTML={{ __html: b.data.html }}
           />
-        );
+        ));
       }
       return null;
 

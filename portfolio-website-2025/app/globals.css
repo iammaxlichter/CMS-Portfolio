@@ -24,3 +24,40 @@ body {
   color: var(--foreground);
 }
 
+
+/* ===== Block animations ===== */
+@keyframes slide-in-left {
+  from { transform: translateX(-24px); opacity: 0; }
+  to   { transform: translateX(0);      opacity: 1; }
+}
+@keyframes slide-in-right {
+  from { transform: translateX(24px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes slide-in-top {
+  from { transform: translateY(-24px); opacity: 0; }
+  to   { transform: translateY(0);      opacity: 1; }
+}
+@keyframes slide-in-bottom {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* base + variants (use CSS vars for timing) */
+.anim-base {
+  --anim-dur: 600ms;
+  --anim-delay: 0ms;
+  animation-duration: var(--anim-dur);
+  animation-delay: var(--anim-delay);
+  animation-fill-mode: both;
+  will-change: transform, opacity;
+}
+.anim-slideInLeft   { animation-name: slide-in-left;   animation-timing-function: ease-out; }
+.anim-slideInRight  { animation-name: slide-in-right;  animation-timing-function: ease-out; }
+.anim-slideInTop    { animation-name: slide-in-top;    animation-timing-function: ease-out; }
+.anim-slideInBottom { animation-name: slide-in-bottom; animation-timing-function: ease-out; }
+.anim-fadeIn        { animation-name: fade-in;         animation-timing-function: ease-out; }

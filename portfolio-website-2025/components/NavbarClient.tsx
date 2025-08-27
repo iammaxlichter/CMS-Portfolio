@@ -94,7 +94,7 @@ export default function NavbarClient({
 
   return (
     <header className="sticky top-0 z-50 bg-[#343330] text-white">
-      <nav className="mx-auto flex max-w-7xl items-center text-[15px] justify-between px-4 py-4.5 mr-4 ml-4 md:px-6" aria-label="Main">
+      <nav className="flex items-center text-[15px] px-4 py-4.5 mr-4 ml-4 md:px-6" aria-label="Main">
         <Link href="/" className="inline-flex items-center gap-2 font-semibold">
           <Image
             src="/images/other/logoWhite.png"
@@ -107,7 +107,7 @@ export default function NavbarClient({
           <span className="sr-only">Home</span>
         </Link>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="ml-auto hidden items-center gap-2 md:flex">
           <Link href="/" className="px-3 py-2 hover:text-white/90">Home</Link>
           <Dropdown label="Projects" items={projects} />
           <Dropdown label="Experience" items={experience} />
@@ -121,7 +121,7 @@ export default function NavbarClient({
         <button
           type="button"
           onClick={() => setMobileOpen((v) => !v)}
-          className="md:hidden inline-flex flex-col items-center justify-center rounded p-2 hover:bg-white/10"
+          className="md:hidden ml-auto inline-flex flex-col items-center justify-center rounded p-2 hover:bg-white/10"
           aria-label="Toggle menu"
           aria-expanded={mobileOpen}
         >

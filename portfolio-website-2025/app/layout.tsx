@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Libre_Franklin } from "next/font/google";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer"
 import "./globals.css";
 
 const libreFranklin = Libre_Franklin({
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${libreFranklin.variable} antialiased`}>
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

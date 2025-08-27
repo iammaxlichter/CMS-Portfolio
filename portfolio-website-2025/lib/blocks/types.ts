@@ -12,6 +12,13 @@ export type BlockType =
   | "date"
   | "card_grid";
 
+export type AnimationType =
+  | "slideInLeft"
+  | "slideInRight"
+  | "slideInTop"
+  | "slideInBottom"
+  | "fadeIn";
+
 export type GalleryItem = {
   path: string;
   alt?: string;
@@ -53,7 +60,13 @@ export type GalleryData = {
   cols?: 2 | 3;
   gap?: number;
 };
-         
+   
+export type AnimationSettings = {
+  type: AnimationType;
+  durationMs?: number; // default 600
+  delayMs?: number;    // default 0
+};
+
 export type VideoData = { url: string };
 export type ColumnsData = { columns: 1 | 2 };
 export type ButtonData = { text: string; href: string };
@@ -155,3 +168,5 @@ export function isDateData(block: Block): block is Block & { data: DateData } {
 export function isCardGridData(block: Block): block is Block & { data: CardGridData } {
   return block.block_type === "card_grid";
 }
+
+export type WithAnim = { _anim?: AnimationSettings };
