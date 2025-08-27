@@ -53,6 +53,7 @@ import {
 
 import Paragraph from "@/components/admin/blocks/Paragraph";
 import { DefaultData } from "@/lib/blocks/types";
+import GalleryEditor from "@/components/admin/blocks/Gallery";
 
 /* ------------------------------ Helpers ------------------------------ */
 
@@ -361,71 +362,8 @@ function SortableItem({
 
 
         {block.block_type === "gallery" && isGalleryData(block) && (
-          <div className="space-y-2">
-            {/* Existing items */}
-            {(block.data.paths ?? []).map((p, i) => (
-              <div key={i} className="flex gap-2">
-                <input
-                  className="flex-1 rounded border p-2 text-black"
-                  value={p}
-                  onChange={(e) => {
-                    const paths = [...(block.data.paths ?? [])];
-                    paths[i] = e.target.value;
-                    debounced({ ...block, data: { ...block.data, paths } as GalleryData });
-                  }}
-                  placeholder="https://example.com/img.jpg or uploads/hero.png"
-                />
-                <button
-                  type="button"
-                  className="rounded border px-2 text-sm"
-                  onClick={() => {
-                    const paths = [...(block.data.paths ?? [])];
-                    paths.splice(i, 1);
-                    debounced({ ...block, data: { ...block.data, paths } as GalleryData });
-                  }}
-                  aria-label="Remove image"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-
-            <input
-              className="w-full rounded border p-2 text-black"
-              placeholder="Type or paste URLs; press Enter to add (multi-line paste supported)"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  const v = (e.currentTarget.value || "").trim();
-                  if (v) {
-                    const paths = [...(block.data.paths ?? []), v];
-                    debounced({ ...block, data: { ...block.data, paths } as GalleryData });
-                    e.currentTarget.value = "";
-                  }
-                }
-              }}
-              onPaste={(e) => {
-                const text = e.clipboardData.getData("text");
-                if (/\r?\n/.test(text)) {
-                  e.preventDefault();
-                  const lines = text
-                    .split(/\r?\n/)
-                    .map((s) => s.trim())
-                    .filter(Boolean);
-                  if (lines.length) {
-                    const paths = [...(block.data.paths ?? []), ...lines];
-                    debounced({ ...block, data: { ...block.data, paths } as GalleryData });
-                  }
-                }
-              }}
-            />
-
-            <div className="text-xs text-neutral-500">
-              Tip: Enter, <kbd>Ctrl</kbd>+Enter, or <kbd>Shift</kbd>+Enter will add; multi-line paste adds all.
-            </div>
-          </div>
+          <GalleryEditor block={block as any} onChange={debounced} />
         )}
-
 
         {block.block_type === "video_youtube" && isVideoData(block) && (
           <input

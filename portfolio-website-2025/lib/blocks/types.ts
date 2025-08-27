@@ -12,6 +12,17 @@ export type BlockType =
   | "date"
   | "card_grid";
 
+export type GalleryItem = {
+  path: string;
+  alt?: string;
+  align?: "left" | "center" | "right";
+  captionAlign?: "left" | "center" | "right";
+  widthPercent?: number;
+  marginTop?: number;
+  marginBottom?: number;
+  marginLeft?: number;
+  marginRight?: number;
+};
 
 export type CardItem = { title: string; href: string; img: string; caption?: string; };
 export type CardGridData = { items: CardItem[] };
@@ -36,7 +47,13 @@ export type ImageData = {
   captionMarginTop?: number;  
   captionMarginBottom?: number;
 };
-export type GalleryData = { paths: string[] };
+export type GalleryData = {
+  items?: GalleryItem[];   // new shape
+  paths?: string[];        // legacy shape
+  cols?: 2 | 3;
+  gap?: number;
+};
+         
 export type VideoData = { url: string };
 export type ColumnsData = { columns: 1 | 2 };
 export type ButtonData = { text: string; href: string };
@@ -85,7 +102,7 @@ export const DefaultData: Record<BlockType, BlockData> = {
     captionMarginTop: 4,
     captionMarginBottom: 4,
   },
-  gallery: { paths: [] },
+  gallery: { items: [], cols: 3, gap: 12 },
   video_youtube: { url: "" },
   columns: { columns: 2 },
   button: { text: "Learn more", href: "/" },

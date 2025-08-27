@@ -1,10 +1,7 @@
 // app/[slug]/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Image from "next/image";
-import type {
-  Block
-} from "@/lib/blocks/types";
-
+import type { Block, GalleryItem } from "@/lib/blocks/types";
 import {
   isTitleData,
   isSubtitleData,
@@ -20,9 +17,15 @@ import {
 } from "@/lib/blocks/types";
 
 import Slideshow from "@/components/admin/blocks/Slideshow";
+import { JSX } from "react";
 
 
 function BlockView({ b }: { b: Block }) {
+
+  const withPadding = (content: JSX.Element) => (
+    <div className="sm:px-16">{content}</div>
+  );
+
   switch (b.block_type) {
     case "title":
       if (isTitleData(b)) {
@@ -41,7 +44,7 @@ function BlockView({ b }: { b: Block }) {
         const mt = b.data.marginTop ?? 16;
         const mb = b.data.marginBottom ?? 16;
 
-        return (
+        return withPadding(
           <div
             className="prose max-w-none prose-p:m-0"
             style={{ fontSize: fs, marginTop: mt, marginBottom: mb }}
@@ -71,7 +74,7 @@ function BlockView({ b }: { b: Block }) {
             : captionAlign === "right" ? "text-right"
               : "text-left";
 
-        return (
+        return withPadding(
           <figure
             className={`${alignClass}`}
             style={{
@@ -114,27 +117,78 @@ function BlockView({ b }: { b: Block }) {
 
     case "gallery":
       if (isGalleryData(b)) {
+        const asItems: GalleryItem[] =
+          Array.isArray(b.data.items) && b.data.items.length
+            ? b.data.items
+            : (b.data.paths ?? []).map((p: string): GalleryItem => ({ path: p }));
+
+
+        const cols = ("cols" in b.data && b.data.cols) || 3;
+        const gap = ("gap" in b.data && b.data.gap) || 12;
+
+        const gridCls =
+          cols === 2 ? "grid grid-cols-2" : "grid grid-cols-2 md:grid-cols-3";
+
         return (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {(b.data.paths ?? []).map((p: string, i: number) => (
-              <Image
-                key={i}
-                src={`/${p}`}
-                alt=""
-                width={800}
-                height={600}
-                className="rounded-lg w-full h-auto"
-              />
-            ))}
+          <div className={gridCls} style={{ gap }}>
+            {asItems.map((it, i) => {
+              const iw = 1200;
+              const ih = 900;
+
+              const alignClass =
+                (it.align ?? "left") === "center"
+                  ? "mx-auto"
+                  : (it.align ?? "left") === "right"
+                    ? "ml-auto"
+                    : "mr-auto";
+
+              const capAlignClass =
+                (it.captionAlign ?? "left") === "center"
+                  ? "text-center"
+                  : (it.captionAlign ?? "left") === "right"
+                    ? "text-right"
+                    : "text-left";
+
+              const widthPct = it.widthPercent ?? 100;
+
+              return (
+                <figure
+                  key={i}
+                  className={alignClass}
+                  style={{
+                    width: `${Math.max(10, Math.min(100, widthPct))}%`,
+                    marginTop: it.marginTop ?? 0,
+                    marginBottom: it.marginBottom ?? 0,
+                    marginLeft: it.marginLeft ?? 0,
+                    marginRight: it.marginRight ?? 0,
+                  }}
+                >
+                  <Image
+                    src={`/${it.path}`}
+                    alt={it.alt || ""}
+                    width={iw}
+                    height={ih}
+                    className="w-full h-auto rounded-lg"
+                  />
+                  {it.alt && (
+                    <figcaption className={`mt-1 text-sm text-neutral-500 ${capAlignClass}`}>
+                      {it.alt}
+                    </figcaption>
+                  )}
+                </figure>
+              );
+            })}
           </div>
         );
       }
       return null;
+
+
     case "video_youtube":
       if (isVideoData(b)) {
         const url = b.data.url;
         const id = url?.match(/(?:v=|be\/)([A-Za-z0-9_-]{11})/)?.[1];
-        return id ? (
+        return id ? withPadding(
           <div className="aspect-video">
             <iframe
               className="w-full h-full rounded-xl"
@@ -150,7 +204,7 @@ function BlockView({ b }: { b: Block }) {
     case "button":
       if (isButtonData(b)) {
         const isExternal = /^https?:\/\//i.test(b.data.href);
-        return (
+        return withPadding(
           <a
             href={b.data.href || "#"}
             {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
@@ -164,7 +218,7 @@ function BlockView({ b }: { b: Block }) {
 
     case "slideshow":
       if (isSlideshowData(b)) {
-        return <Slideshow paths={b.data.paths ?? []} />;
+        return withPadding(<Slideshow paths={b.data.paths ?? []} />);
       }
       return null;
 
@@ -196,7 +250,7 @@ function BlockView({ b }: { b: Block }) {
               const src = /^https?:\/\//i.test(it.img) ? it.img : `/${it.img}`;
               const href = it.href || "#";
               const isExternal = /^https?:\/\//i.test(href);
-              return (
+              return withPadding(
                 <a
                   key={i}
                   href={href}
