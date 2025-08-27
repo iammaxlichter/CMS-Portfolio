@@ -1,58 +1,157 @@
-// lib/blocks/types.ts  (no "use client")
-
+// /lib/blocks/types.ts
 export type BlockType =
-  | 'title'
-  | 'subtitle'
-  | 'paragraph'
-  | 'image'
-  | 'gallery'
-  | 'video_youtube'
-  | 'columns';
+  | "title"
+  | "subtitle"
+  | "paragraph"
+  | "image"
+  | "gallery"
+  | "video_youtube"
+  | "columns"
+  | "button"
+  | "slideshow"
+  | "date"
+  | "card_grid";
 
+export type GalleryItem = {
+  path: string;
+  alt?: string;
+  align?: "left" | "center" | "right";
+  captionAlign?: "left" | "center" | "right";
+  widthPercent?: number;
+  marginTop?: number;
+  marginBottom?: number;
+  marginLeft?: number;
+  marginRight?: number;
+};
+
+export type CardItem = { title: string; href: string; img: string; caption?: string; };
+export type CardGridData = { items: CardItem[] };
 export type TitleData = { text: string };
 export type SubtitleData = { text: string };
-export type ParagraphData = { html: string };
-export type ImageData = { path: string; alt: string };
-export type GalleryData = { paths: string[] };
+export type ParagraphData = {
+  html: string;
+  fontSize?: number;     
+  marginTop?: number;     
+  marginBottom?: number;  
+};
+export type ImageData = {
+  path: string;
+  alt: string;
+  displayMaxWidth?: number;
+  align?: "left" | "center" | "right";
+  captionAlign?: "left" | "center" | "right";
+  intrinsicWidth?: number;
+  intrinsicHeight?: number;
+  marginTop?: number;         
+  marginBottom?: number;      
+  captionMarginTop?: number;  
+  captionMarginBottom?: number;
+};
+export type GalleryData = {
+  items?: GalleryItem[];   // new shape
+  paths?: string[];        // legacy shape
+  cols?: 2 | 3;
+  gap?: number;
+};
+         
 export type VideoData = { url: string };
-export type ColumnsData = { columns: 1 | 2; left: string[]; right: string[] };
+export type ColumnsData = { columns: 1 | 2 };
+export type ButtonData = { text: string; href: string };
+export type SlideshowData = { paths: string[] };
+export type DateData = { text: string; align?: "left" | "center" | "right" };
 
-/** Common fields for every block.
- *  `position` is the new fractional ordering key.
- *  `sort_index` stays optional for backward compatibility during migration.
- */
-type Base = {
+export type BlockData =
+  | TitleData
+  | SubtitleData
+  | ParagraphData
+  | ImageData
+  | GalleryData
+  | VideoData
+  | ColumnsData
+  | ButtonData
+  | SlideshowData
+  | DateData
+  | CardGridData;
+
+export type Slot = "left" | "right" | null;
+
+export type Block = {
   id: string;
+  page_id: string;
+  block_type: BlockType;
+  data: BlockData;
   position: number;
-  sort_index?: number; // deprecated
+  parent_id: string | null;
+  slot: Slot;
 };
 
-export type TitleBlock       = Base & { block_type: 'title';         data: TitleData };
-export type SubtitleBlock    = Base & { block_type: 'subtitle';      data: SubtitleData };
-export type ParagraphBlock   = Base & { block_type: 'paragraph';     data: ParagraphData };
-export type ImageBlock       = Base & { block_type: 'image';         data: ImageData };
-export type GalleryBlock     = Base & { block_type: 'gallery';       data: GalleryData };
-export type VideoBlock       = Base & { block_type: 'video_youtube'; data: VideoData };
-export type ColumnsBlock     = Base & { block_type: 'columns';       data: ColumnsData };
-
-export type Block =
-  | TitleBlock
-  | SubtitleBlock
-  | ParagraphBlock
-  | ImageBlock
-  | GalleryBlock
-  | VideoBlock
-  | ColumnsBlock;
-
-export const DefaultData: Record<
-  BlockType,
-  TitleData | SubtitleData | ParagraphData | ImageData | GalleryData | VideoData | ColumnsData
-> = {
-  title: { text: 'Title' },
-  subtitle: { text: 'Subtitle' },
-  paragraph: { html: 'Write something…' },
-  image: { path: '', alt: '' },
-  gallery: { paths: [] },
-  video_youtube: { url: '' },
-  columns: { columns: 2, left: [], right: [] },
+export const DefaultData: Record<BlockType, BlockData> = {
+  title: { text: "Title" },
+  subtitle: { text: "Subtitle" },
+  paragraph: { html: "Write something…", fontSize: 16, marginTop: 16, marginBottom: 16 },
+  image: {
+    path: "",
+    alt: "",
+    displayMaxWidth: 1200,
+    align: "left",
+    captionAlign: "left",
+    intrinsicWidth: 1600,
+    intrinsicHeight: 900,
+    marginTop: 16,
+    marginBottom: 16,
+    captionMarginTop: 4,
+    captionMarginBottom: 4,
+  },
+  gallery: { items: [], cols: 3, gap: 12 },
+  video_youtube: { url: "" },
+  columns: { columns: 2 },
+  button: { text: "Learn more", href: "/" },
+  slideshow: { paths: [] },
+  date: { text: "Feb. 2025 – Present", align: "right" },
+  card_grid: { items: [] },
 };
+
+// Type guard functions
+export function isTitleData(block: Block): block is Block & { data: TitleData } {
+  return block.block_type === "title";
+}
+
+export function isSubtitleData(block: Block): block is Block & { data: SubtitleData } {
+  return block.block_type === "subtitle";
+}
+
+export function isParagraphData(block: Block): block is Block & { data: ParagraphData } {
+  return block.block_type === "paragraph";
+}
+
+export function isImageData(block: Block): block is Block & { data: ImageData } {
+  return block.block_type === "image";
+}
+
+export function isGalleryData(block: Block): block is Block & { data: GalleryData } {
+  return block.block_type === "gallery";
+}
+
+export function isVideoData(block: Block): block is Block & { data: VideoData } {
+  return block.block_type === "video_youtube";
+}
+
+export function isColumnsData(block: Block): block is Block & { data: ColumnsData } {
+  return block.block_type === "columns";
+}
+
+export function isButtonData(block: Block): block is Block & { data: ButtonData } {
+  return block.block_type === "button";
+}
+
+export function isSlideshowData(block: Block): block is Block & { data: SlideshowData } {
+  return block.block_type === "slideshow";
+}
+
+export function isDateData(block: Block): block is Block & { data: DateData } {
+  return block.block_type === "date";
+}
+
+export function isCardGridData(block: Block): block is Block & { data: CardGridData } {
+  return block.block_type === "card_grid";
+}
