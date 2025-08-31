@@ -1,36 +1,71 @@
-// components/admin/blocks/Slideshow.tsx
-
 "use client";
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
-export default function Slideshow({ paths }: { paths: string[] }) {
+type Props = {
+  paths: string[];
+  displayMaxWidth?: number;
+  align?: "left" | "center" | "right";
+  marginTop?: number;
+  marginBottom?: number;
+  aspectRatio?: string;   // e.g. "16/9"
+  fixedHeightPx?: number; // e.g. 420
+};
+
+export default function Slideshow({
+  paths,
+  displayMaxWidth = 1200,
+  align = "left",
+  marginTop = 16,
+  marginBottom = 16,
+  aspectRatio = "16/9",
+  fixedHeightPx,
+}: Props) {
   const imgs = useMemo(() => (paths ?? []).filter(Boolean), [paths]);
   const [i, setI] = useState(0);
   if (imgs.length === 0) return null;
 
   const go = (d: number) => setI((prev) => (prev + d + imgs.length) % imgs.length);
 
+  const alignClass =
+    align === "center" ? "mx-auto"
+    : align === "right" ? "ml-auto"
+    : ""; // left default
+
+  // size wrapper: either fixed height or aspect-ratio
+  const sizeWrapperStyle: React.CSSProperties = fixedHeightPx
+    ? { height: `${fixedHeightPx}px` }
+    : { aspectRatio: aspectRatio || "16/9" };
+
   return (
-    <div className="relative w-full overflow-hidden rounded-xl">
-      <div className="relative aspect-[16/9]">
-        <div
-          className="flex h-full w-full transition-transform duration-500"
-          style={{ transform: `translateX(-${i * 100}%)` }}
-        >
-          {imgs.map((p, idx) => (
-            <div key={idx} className="relative w-full shrink-0">
-              <Image
-                src={p.startsWith("/") ? p : `/${p}`}
-                alt=""
-                fill
-                className="object-cover"
-                sizes="(min-width: 768px) 800px, 100vw"
-                priority={idx === 0}
-              />
-            </div>
-          ))}
+    <figure
+      className={`relative w-full ${alignClass}`}
+      style={{
+        maxWidth: `${displayMaxWidth}px`,
+        marginTop,
+        marginBottom,
+      }}
+    >
+      <div className="relative w-full overflow-hidden rounded-xl">
+        <div className="relative" style={sizeWrapperStyle}>
+          <div
+            className="flex h-full w-full transition-transform duration-500"
+            style={{ transform: `translateX(-${i * 100}%)` }}
+          >
+            {imgs.map((p, idx) => (
+              <div key={idx} className="relative w-full shrink-0">
+                <Image
+                  src={p.startsWith("/") ? p : `/${p}`}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 768px) 800px, 100vw"
+                  priority={idx === 0}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -62,6 +97,6 @@ export default function Slideshow({ paths }: { paths: string[] }) {
           </div>
         </>
       )}
-    </div>
+    </figure>
   );
 }

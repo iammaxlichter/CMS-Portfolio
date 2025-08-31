@@ -1,5 +1,5 @@
 // /components/Footer.tsx
-import { FaGithub, FaLinkedin, FaEnvelope, FaShareAlt } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 
 export default function Footer() {
   return (

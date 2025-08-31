@@ -31,7 +31,20 @@ export type GalleryItem = {
   marginRight?: number;
 };
 
-export type CardItem = { title: string; href: string; img: string; caption?: string; };
+export type CardItem = {
+  title: string;
+  href: string;
+  img: string;
+  caption?: string;
+  align?: "left" | "center" | "right"; 
+  widthPercent?: number;              
+  marginTop?: number;
+  marginBottom?: number;
+  marginLeft?: number;
+  marginRight?: number;
+  thumbMaxWidthPx?: number; 
+};
+
 export type CardGridData = { items: CardItem[] };
 export type TitleData = { text: string };
 export type SubtitleData = { text: string };
@@ -57,7 +70,7 @@ export type ImageData = {
 export type GalleryData = {
   items?: GalleryItem[];   // new shape
   paths?: string[];        // legacy shape
-  cols?: 2 | 3;
+  cols?: 2 | 3 | 4;
   gap?: number;
 };
    
@@ -70,7 +83,16 @@ export type AnimationSettings = {
 export type VideoData = { url: string };
 export type ColumnsData = { columns: 1 | 2 };
 export type ButtonData = { text: string; href: string };
-export type SlideshowData = { paths: string[] };
+export type SlideshowData = {
+  paths: string[];
+  displayMaxWidth?: number;
+  align?: "left" | "center" | "right";
+  marginTop?: number;
+  marginBottom?: number;
+  aspectRatio?: string;       
+  fixedHeightPx?: number;     
+};
+
 export type DateData = { text: string; align?: "left" | "center" | "right" };
 
 export type BlockData =

@@ -1,0 +1,10 @@
+add the 2 button variants
+add links to linkedin pages through paragraphs like on soccer robot for teammates
+border on images? like slideshow and gallery
+margin on buttons
+clicking an image on portfolio2023 makes it a bigger image the user can look at
+animation when opening the navbar in mobile (hamburger)
+centering images on a WHOLE column (if a LHS has a giant paragraph, I want the image on the right handside to be in the middle instead of at the top (maybe an option for that))
+bold current page on navbar
+home page
+favicon

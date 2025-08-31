@@ -24,22 +24,21 @@ body {
   color: var(--foreground);
 }
 
-
 /* ===== Block animations ===== */
 @keyframes slide-in-left {
-  from { transform: translateX(-24px); opacity: 0; }
+  from { transform: translateX(-54px); opacity: 0; }
   to   { transform: translateX(0);      opacity: 1; }
 }
 @keyframes slide-in-right {
-  from { transform: translateX(24px); opacity: 0; }
+  from { transform: translateX(54px); opacity: 0; }
   to   { transform: translateX(0);    opacity: 1; }
 }
 @keyframes slide-in-top {
-  from { transform: translateY(-24px); opacity: 0; }
+  from { transform: translateY(-54px); opacity: 0; }
   to   { transform: translateY(0);      opacity: 1; }
 }
 @keyframes slide-in-bottom {
-  from { transform: translateY(24px); opacity: 0; }
+  from { transform: translateY(54px); opacity: 0; }
   to   { transform: translateY(0);     opacity: 1; }
 }
 @keyframes fade-in {
@@ -47,17 +46,49 @@ body {
   to   { opacity: 1; }
 }
 
-/* base + variants (use CSS vars for timing) */
+/* Base class - sets up the initial hidden state */
 .anim-base {
   --anim-dur: 600ms;
   --anim-delay: 0ms;
-  animation-duration: var(--anim-dur);
-  animation-delay: var(--anim-delay);
-  animation-fill-mode: both;
   will-change: transform, opacity;
 }
-.anim-slideInLeft   { animation-name: slide-in-left;   animation-timing-function: ease-out; }
-.anim-slideInRight  { animation-name: slide-in-right;  animation-timing-function: ease-out; }
-.anim-slideInTop    { animation-name: slide-in-top;    animation-timing-function: ease-out; }
-.anim-slideInBottom { animation-name: slide-in-bottom; animation-timing-function: ease-out; }
-.anim-fadeIn        { animation-name: fade-in;         animation-timing-function: ease-out; }
+
+/* Default state: hidden and positioned at start */
+.anim-base.anim-paused {
+  opacity: 0;
+}
+
+/* Initial positions for each animation type when paused */
+.anim-slideInLeft.anim-paused   { transform: translateX(-104px); }
+.anim-slideInRight.anim-paused  { transform: translateX(104px); }
+.anim-slideInTop.anim-paused    { transform: translateY(-104px); }
+.anim-slideInBottom.anim-paused { transform: translateY(104px); }
+.anim-fadeIn.anim-paused        { --noop: 1; }
+
+/* When running, apply the actual animation */
+.anim-running.anim-slideInLeft {
+  animation: slide-in-left var(--anim-dur) ease-out var(--anim-delay) both;
+}
+.anim-running.anim-slideInRight {
+  animation: slide-in-right var(--anim-dur) ease-out var(--anim-delay) both;
+}
+.anim-running.anim-slideInTop {
+  animation: slide-in-top var(--anim-dur) ease-out var(--anim-delay) both;
+}
+.anim-running.anim-slideInBottom {
+  animation: slide-in-bottom var(--anim-dur) ease-out var(--anim-delay) both;
+}
+.anim-running.anim-fadeIn {
+  animation: fade-in var(--anim-dur) ease-out var(--anim-delay) both;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .anim-base { 
+    opacity: 1 !important; 
+    transform: none !important;
+  }
+  .anim-running { 
+    animation: none !important; 
+  }
+}
