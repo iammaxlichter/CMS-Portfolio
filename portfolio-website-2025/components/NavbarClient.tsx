@@ -1,9 +1,9 @@
-// components/NavbarClient.tsx
-
+// /components/NavbarClient.tsx
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 
 function CaretDown({ className = "h-3 w-3" }: { className?: string }) {
@@ -16,81 +16,81 @@ function CaretDown({ className = "h-3 w-3" }: { className?: string }) {
 
 type Item = { label: string; href: string };
 
+const cx = (...cls: (string | false | null | undefined)[]) =>
+  cls.filter(Boolean).join(" ");
+
 function Dropdown({ label, items }: { label: string; items: Item[] }) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement | null>(null);
+  const pathname = usePathname();
 
-  // close on Esc + outside click (keep these)
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-  useEffect(() => {
-    const onDocClick = (e: MouseEvent) => {
-      if (!btnRef.current) return;
-      if (!btnRef.current.parentElement?.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, []);
+  const parentActive = items.some((it) => it.href === pathname);
 
   return (
     <div
-      className="relative"                    // contains both button and menu
-      onMouseEnter={() => setOpen(true)}      // open on hover
-      onMouseLeave={() => setOpen(false)}     // close when leaving BOTH
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
     >
       <button
         type="button"
         ref={btnRef}
-        className="inline-flex items-center gap-1 px-3 py-2 hover:text-white/90"
+        className={cx(
+          "inline-flex items-center gap-1 px-3 py-2 hover:text-white/90",
+          parentActive && "font-bold text-white"
+        )}
         aria-haspopup="menu"
         aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}    // also supports click
+        onClick={() => setOpen((v) => !v)}
       >
         {label}
         <CaretDown />
       </button>
 
-      {/* sit flush: no vertical gap */}
       <div
         role="menu"
-        className={`absolute left-0 top-full z-50 min-w-48 rounded-lg bg-[#343330]  p-1 shadow-lg transition
-          ${open ? "opacity-100 translate-y-0 pointer-events-auto"
-            : "opacity-0 -translate-y-1 pointer-events-none"}`}
+        className={cx(
+          "absolute left-0 top-full z-50 min-w-48 rounded-lg bg-[#343330] p-1 shadow-lg transition",
+          open ? "opacity-100 translate-y-0 pointer-events-auto"
+               : "opacity-0 -translate-y-1 pointer-events-none"
+        )}
       >
-        {items.map((it) => (
-          <Link
-            key={`${label}-${it.href}`}
-            href={it.href}
-            className="block rounded-md px-3 py-2 text-sm text-white/90 hover:bg-white/10"
-            role="menuitem"
-            onClick={() => setOpen(false)}
-          >
-            {it.label}
-          </Link>
-        ))}
+        {items.map((it) => {
+          const active = it.href === pathname;
+          return (
+            <Link
+              key={`${label}-${it.href}`}
+              href={it.href}
+              className={cx(
+                "block rounded-md px-3 py-2 text-sm text-white/90 hover:bg-white/10",
+                active && "font-bold text-white bg-white/10"
+              )}
+              role="menuitem"
+              onClick={() => setOpen(false)}
+            >
+              {it.label}
+            </Link>
+          );
+        })}
       </div>
-
-      {/* optional tiny 'hover bridge' if your theme adds borders causing gaps */}
-      {/* <div className="absolute left-0 right-0 top-full h-2" /> */}
     </div>
   );
 }
-
 
 export default function NavbarClient({
   projects,
   experience,
   standalones = [],
-
 }: {
   projects: Item[];
   experience: Item[];
   standalones?: Item[];
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  const projectsActive = projects.some((it) => it.href === pathname);
+  const experienceActive = experience.some((it) => it.href === pathname);
 
   return (
     <header className="sticky top-0 z-50 bg-[#343330] text-white">
@@ -108,14 +108,34 @@ export default function NavbarClient({
         </Link>
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          <Link href="/" className="px-3 py-2 hover:text-white/90">Home</Link>
+          <Link
+            href="/"
+            className={cx(
+              "px-3 py-2 hover:text-white/90",
+              pathname === "/" && "font-bold text-white"
+            )}
+          >
+            Home
+          </Link>
+
           <Dropdown label="Projects" items={projects} />
           <Dropdown label="Experience" items={experience} />
-          {standalones.map((it) => (
-            <Link key={it.href} href={it.href} className="px-3 py-2 hover:text-white/90">
-              {it.label}
-            </Link>
-          ))}
+
+          {standalones.map((it) => {
+            const active = pathname === it.href;
+            return (
+              <Link
+                key={it.href}
+                href={it.href}
+                className={cx(
+                  "px-3 py-2 hover:text-white/90",
+                  active && "font-bold text-white"
+                )}
+              >
+                {it.label}
+              </Link>
+            );
+          })}
         </div>
 
         <button
@@ -129,23 +149,37 @@ export default function NavbarClient({
           <span className="block h-0.5 w-6 bg-white my-1" />
           <span className="block h-0.5 w-6 bg-white" />
         </button>
-
       </nav>
 
       {mobileOpen && (
         <div className="md:hidden border-t border-white/10 bg-[#343330] px-4 py-3 space-y-1">
-          <Link href="/" className="block rounded px-3 py-2 hover:bg-white/10" onClick={() => setMobileOpen(false)}>
+          <Link
+            href="/"
+            className={cx(
+              "block rounded px-3 py-2 hover:bg-white/10",
+              pathname === "/" && "font-bold bg-white/10"
+            )}
+            onClick={() => setMobileOpen(false)}
+          >
             Home
           </Link>
 
           <details className="group">
             <summary className="flex cursor-pointer list-none items-center justify-between rounded px-3 py-2 hover:bg-white/10">
-              <span>Projects</span>
+              <span className={projectsActive ? "font-bold" : undefined}>Projects</span>
               <CaretDown className="h-4 w-4 transition group-open:rotate-180" />
             </summary>
             <div className="mt-1 space-y-1 pl-4">
               {projects.map((it) => (
-                <Link key={`m-projects-${it.href}`} href={it.href} className="block rounded px-3 py-2 text-sm hover:bg-white/10" onClick={() => setMobileOpen(false)}>
+                <Link
+                  key={`m-projects-${it.href}`}
+                  href={it.href}
+                  className={cx(
+                    "block rounded px-3 py-2 text-sm hover:bg-white/10",
+                    pathname === it.href && "font-bold bg-white/10"
+                  )}
+                  onClick={() => setMobileOpen(false)}
+                >
                   {it.label}
                 </Link>
               ))}
@@ -154,12 +188,20 @@ export default function NavbarClient({
 
           <details className="group">
             <summary className="flex cursor-pointer list-none items-center justify-between rounded px-3 py-2 hover:bg-white/10">
-              <span>Experience</span>
+              <span className={experienceActive ? "font-bold" : undefined}>Experience</span>
               <CaretDown className="h-4 w-4 transition group-open:rotate-180" />
             </summary>
             <div className="mt-1 space-y-1 pl-4">
               {experience.map((it) => (
-                <Link key={`m-exp-${it.href}`} href={it.href} className="block rounded px-3 py-2 text-sm hover:bg-white/10" onClick={() => setMobileOpen(false)}>
+                <Link
+                  key={`m-exp-${it.href}`}
+                  href={it.href}
+                  className={cx(
+                    "block rounded px-3 py-2 text-sm hover:bg-white/10",
+                    pathname === it.href && "font-bold bg-white/10"
+                  )}
+                  onClick={() => setMobileOpen(false)}
+                >
                   {it.label}
                 </Link>
               ))}
@@ -170,7 +212,10 @@ export default function NavbarClient({
             <Link
               key={`m-standalone-${it.href}`}
               href={it.href}
-              className="block rounded px-3 py-2 hover:bg-white/10"
+              className={cx(
+                "block rounded px-3 py-2 hover:bg-white/10",
+                pathname === it.href && "font-bold bg-white/10"
+              )}
               onClick={() => setMobileOpen(false)}
             >
               {it.label}

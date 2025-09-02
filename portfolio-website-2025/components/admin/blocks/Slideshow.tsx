@@ -9,8 +9,12 @@ type Props = {
   align?: "left" | "center" | "right";
   marginTop?: number;
   marginBottom?: number;
-  aspectRatio?: string;   // e.g. "16/9"
-  fixedHeightPx?: number; // e.g. 420
+  aspectRatio?: string;    // e.g. "16/9"
+  fixedHeightPx?: number;  // e.g. 420
+  borderWidthPx?: number;  // NEW: pixel width of border
+  borderColor?: string;    // NEW: border color (default #343330)
+  paddingPx?: number; 
+  
 };
 
 export default function Slideshow({
@@ -21,6 +25,9 @@ export default function Slideshow({
   marginBottom = 16,
   aspectRatio = "16/9",
   fixedHeightPx,
+  paddingPx = 0,
+  borderWidthPx = 0,
+  borderColor = "#343330",
 }: Props) {
   const imgs = useMemo(() => (paths ?? []).filter(Boolean), [paths]);
   const [i, setI] = useState(0);
@@ -47,7 +54,15 @@ export default function Slideshow({
         marginBottom,
       }}
     >
-      <div className="relative w-full overflow-hidden rounded-xl">
+      <div
+        className="relative w-full overflow-hidden rounded-xl"
+        style={{
+          padding: paddingPx,
+          borderStyle: borderWidthPx ? "solid" : undefined,
+          borderWidth: borderWidthPx ? `${borderWidthPx}px` : undefined,
+          borderColor: borderWidthPx ? borderColor : undefined,
+        }}
+      >
         <div className="relative" style={sizeWrapperStyle}>
           <div
             className="flex h-full w-full transition-transform duration-500"

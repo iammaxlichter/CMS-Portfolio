@@ -16,6 +16,8 @@ import {
   isCardGridData,
 } from "@/lib/blocks/types";
 
+import type { VAlign } from "@/lib/blocks/types";
+
 import type { AnimationSettings, WithAnim } from "@/lib/blocks/types";
 import Slideshow from "@/components/admin/blocks/Slideshow";
 import { JSX } from "react";
@@ -32,6 +34,11 @@ const animClassMap = {
 function getAnim(b: Block): AnimationSettings | undefined {
   return (b.data as WithAnim)._anim;
 }
+
+const vClass = (v?: VAlign) =>
+  v === "middle" ? "justify-center"
+  : v === "bottom" ? "justify-end"
+  : "justify-start";
 
 function BlockView({ b }: { b: Block }) {
   const withPadding = (content: JSX.Element) => (
@@ -109,6 +116,9 @@ function BlockView({ b }: { b: Block }) {
         const iw = b.data.intrinsicWidth ?? 1600;
         const ih = b.data.intrinsicHeight ?? 900;
 
+        const bw = b.data.borderWidthPx ?? 0;
+        const bc = b.data.borderColor ?? "#343330";
+
         const alignClass =
           align === "center" ? "mx-auto" : align === "right" ? "ml-auto" : ""; // left = default
 
@@ -142,6 +152,12 @@ function BlockView({ b }: { b: Block }) {
                   width={iw}
                   height={ih}
                   className="rounded-xl w-full h-auto"
+                  style={{
+                    padding: b.data.paddingPx ?? 0,
+                    borderStyle: bw ? "solid" : undefined,
+                    borderWidth: bw ? `${bw}px` : undefined,
+                    borderColor: bw ? bc : undefined,
+                  }}
                 />
               </div>
 
@@ -191,6 +207,9 @@ function BlockView({ b }: { b: Block }) {
                 const iw = 1200;
                 const ih = 900;
 
+                const ibw = it.borderWidthPx ?? 0;
+                const ibc = it.borderColor ?? "#343330";
+
                 const alignClass =
                   (it.align ?? "left") === "center"
                     ? "justify-self-center"
@@ -225,6 +244,12 @@ function BlockView({ b }: { b: Block }) {
                       width={iw}
                       height={ih}
                       className="w-full h-auto rounded-lg"
+                      style={{
+                        padding: it.paddingPx ?? 0,
+                        borderStyle: ibw ? "solid" : undefined,
+                        borderWidth: ibw ? `${ibw}px` : undefined,
+                        borderColor: ibw ? ibc : undefined,
+                      }}
                     />
                     {it.alt && (
                       <figcaption
@@ -267,18 +292,31 @@ function BlockView({ b }: { b: Block }) {
     case "button":
       if (isButtonData(b)) {
         const isExternal = /^https?:\/\//i.test(b.data.href);
+        const v = b.data.variant ?? "outline";
+        const mt = b.data.paddingTop ?? 0;
+        const mb = b.data.paddingBottom ?? 0;
+
+        const base =
+          "inline-flex items-center rounded-lg px-4 py-2 font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
+        const outline =
+          "border border-[#9D231B] text-[#9D231B] bg-transparent hover:bg-[#9D231B]/10 focus-visible:ring-[#9D231B]";
+        const solid =
+          "bg-[#9D231B] text-[#FBFBFB] hover:brightness-95 focus-visible:ring-[#9D231B]";
+
         return withPadding(
           wrapWithAnim(
             b,
-            <a
-              href={b.data.href || "#"}
-              {...(isExternal
-                ? { target: "_blank", rel: "noopener noreferrer" }
-                : {})}
-              className="inline-flex items-center rounded-lg bg-black px-4 py-2 font-medium text-white hover:bg-neutral-800"
-            >
-              {b.data.text || "Learn more"}
-            </a>
+            <div style={{ marginTop: mt, marginBottom: mb }}>
+              <a
+                href={b.data.href || "#"}
+                {...(isExternal
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+                className={`${base} ${v === "solid" ? solid : outline}`}
+              >
+                {b.data.text || "Learn more"}
+              </a>
+            </div>
           )
         );
       }
@@ -297,6 +335,8 @@ function BlockView({ b }: { b: Block }) {
               marginBottom={b.data.marginBottom ?? 16}
               aspectRatio={b.data.aspectRatio}
               fixedHeightPx={b.data.fixedHeightPx}
+              borderColor={b.data.borderColor}
+              borderWidthPx={b.data.borderWidthPx}
             />
           )
         );
@@ -423,24 +463,30 @@ function ColumnsView({
   block,
   all,
 }: {
-  block: Block; // columns
+  block: Block;
   all: Block[];
 }) {
   if (!isColumnsData(block)) return null;
 
-  const cols = block.data.columns;
+  // block is now narrowed -> data is ColumnsData
+  const { columns: cols, vAlignLeft, vAlignRight } = block.data;
+
   const left = all
     .filter((x) => x.parent_id === block.id && x.slot === "left")
     .sort((a, b) => a.position - b.position);
+
   const right = all
     .filter((x) => x.parent_id === block.id && x.slot === "right")
     .sort((a, b) => a.position - b.position);
 
+  const vClass = (v?: VAlign) =>
+    v === "middle" ? "justify-center"
+    : v === "bottom" ? "justify-end"
+    : "justify-start";
+
   return (
-    <div
-      className={`grid ${cols === 2 ? "md:grid-cols-2" : "grid-cols-1"}`}
-    >
-      <div className="space-y-6">
+    <div className={`grid ${cols === 2 ? "md:grid-cols-2" : "grid-cols-1"} items-stretch gap-6`}>
+      <div className={`flex flex-col h-full ${vClass(vAlignLeft)} space-y-6`}>
         {left.map((child) =>
           child.block_type === "columns" ? (
             <ColumnsView key={child.id} block={child} all={all} />
@@ -449,8 +495,9 @@ function ColumnsView({
           )
         )}
       </div>
+
       {cols === 2 && (
-        <div className="space-y-6">
+        <div className={`flex flex-col h-full ${vClass(vAlignRight)} space-y-6`}>
           {right.map((child) =>
             child.block_type === "columns" ? (
               <ColumnsView key={child.id} block={child} all={all} />
@@ -463,6 +510,7 @@ function ColumnsView({
     </div>
   );
 }
+
 
 export default async function Page({
   params,

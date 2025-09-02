@@ -19,6 +19,10 @@ export type AnimationType =
   | "slideInBottom"
   | "fadeIn";
 
+
+export type ButtonVariant = "outline" | "solid";
+export type VAlign = "top" | "middle" | "bottom";
+
 export type GalleryItem = {
   path: string;
   alt?: string;
@@ -29,6 +33,9 @@ export type GalleryItem = {
   marginBottom?: number;
   marginLeft?: number;
   marginRight?: number;
+  borderWidthPx?: number;
+  borderColor?: string; 
+  paddingPx?: number;
 };
 
 export type CardItem = {
@@ -66,6 +73,9 @@ export type ImageData = {
   marginBottom?: number;      
   captionMarginTop?: number;  
   captionMarginBottom?: number;
+  borderWidthPx?: number;
+  borderColor?: string; 
+  paddingPx?: number;
 };
 export type GalleryData = {
   items?: GalleryItem[];   // new shape
@@ -81,8 +91,21 @@ export type AnimationSettings = {
 };
 
 export type VideoData = { url: string };
-export type ColumnsData = { columns: 1 | 2 };
-export type ButtonData = { text: string; href: string };
+export type ColumnsData = {
+  columns: 1 | 2;
+  vAlignLeft?: "top" | "middle" | "bottom";
+  vAlignRight?: "top" | "middle" | "bottom";
+};
+
+
+export type ButtonData = {
+  text: string;
+  href: string;
+  variant?: ButtonVariant;
+  paddingTop?: number;
+  paddingBottom?: number; 
+};
+
 export type SlideshowData = {
   paths: string[];
   displayMaxWidth?: number;
@@ -91,6 +114,9 @@ export type SlideshowData = {
   marginBottom?: number;
   aspectRatio?: string;       
   fixedHeightPx?: number;     
+  borderWidthPx?: number;
+  borderColor?: string; 
+  paddingPx?: number;
 };
 
 export type DateData = { text: string; align?: "left" | "center" | "right" };
@@ -136,12 +162,16 @@ export const DefaultData: Record<BlockType, BlockData> = {
     marginBottom: 16,
     captionMarginTop: 4,
     captionMarginBottom: 4,
+    borderWidthPx: 0,
+    borderColor: "#343330", 
+    paddingPx: 0,
+    
   },
-  gallery: { items: [], cols: 3, gap: 12 },
+  gallery: { items: [], cols: 3, gap: 12, },
   video_youtube: { url: "" },
-  columns: { columns: 2 },
-  button: { text: "Learn more", href: "/" },
-  slideshow: { paths: [] },
+  columns: { columns: 2, vAlignLeft: "top", vAlignRight: "top" },
+  button: { text: "Learn more", href: "/", variant: "outline", paddingTop: 0, paddingBottom: 0 },
+  slideshow: { paths: [], borderWidthPx: 0, borderColor: "#343330", paddingPx: 0,  },
   date: { text: "Feb. 2025 – Present", align: "right" },
   card_grid: { items: [] },
 };

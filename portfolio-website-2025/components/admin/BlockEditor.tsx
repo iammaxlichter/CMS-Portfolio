@@ -397,6 +397,63 @@ function SortableItem({
                 />
               </label>
             </div>
+            {/* NEW: Border */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <label className="text-sm text-black flex flex-col gap-1">
+                Border width (px)
+                <input
+                  type="number"
+                  min={0}
+                  className="rounded border p-2 text-black"
+                  value={block.data.borderWidthPx ?? 0}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: {
+                        ...block.data,
+                        borderWidthPx: Number(e.target.value),
+                      },
+                    })
+                  }
+                />
+              </label>
+              <label className="text-sm text-black flex flex-col gap-1">
+                Border color
+                <input
+                  type="text"
+                  className="rounded border p-2 text-black"
+                  value={block.data.borderColor ?? "#343330"}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: {
+                        ...block.data,
+                        borderColor: e.target.value || "#343330",
+                      },
+                    })
+                  }
+                  placeholder="#343330"
+                />
+              </label>
+<label className="text-sm text-black flex flex-col gap-1">
+                Padding inside border (px)
+                <input
+                  type="number"
+                  min={0}
+                  className="rounded border p-2 text-black"
+                  value={block.data.paddingPx ?? 0}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: {
+                        ...block.data,
+                        paddingPx: Number(e.target.value) || 0,
+                      },
+                    })
+                  }
+                />
+              </label>
+            </div>
           </div>
         )}
         {block.block_type === "gallery" && isGalleryData(block) && (
@@ -425,32 +482,94 @@ function SortableItem({
               onChange={(e) =>
                 debounced({
                   ...block,
-                  data: { ...block.data, text: e.target.value } as ButtonData,
+                  data: { ...block.data, text: e.target.value },
                 })
               }
               placeholder="Button label (e.g., View Project)"
             />
+
             <input
               className="w-full rounded border p-2 text-black"
               value={block.data.href}
               onChange={(e) =>
                 debounced({
                   ...block,
-                  data: { ...block.data, href: e.target.value } as ButtonData,
+                  data: { ...block.data, href: e.target.value },
                 })
               }
               placeholder="Link (e.g., /projects/mymuse or https://...)"
             />
+
+            {/* NEW: Variant selector */}
+            <label className="text-sm text-black flex items-center gap-2">
+              Style:
+              <select
+                className="rounded border p-2 text-black"
+                value={block.data.variant ?? "outline"}
+                onChange={(e) =>
+                  debounced({
+                    ...block,
+                    data: {
+                      ...block.data,
+                      variant: e.target.value as "outline" | "solid",
+                    },
+                  })
+                }
+              >
+                <option value="outline">
+                  Outline (red border, transparent)
+                </option>
+                <option value="solid">Solid (red fill, white text)</option>
+              </select>
+            </label>
+
+            <div className="grid gap-2 md:grid-cols-2">
+              <label className="text-sm text-black flex flex-col gap-1">
+                Padding top (px)
+                <input
+                  type="number"
+                  className="rounded border p-2 text-black"
+                  value={block.data.paddingTop ?? 0}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: {
+                        ...block.data,
+                        paddingTop: Number(e.target.value),
+                      },
+                    })
+                  }
+                />
+              </label>
+              <label className="text-sm text-black flex flex-col gap-1">
+                Padding bottom (px)
+                <input
+                  type="number"
+                  className="rounded border p-2 text-black"
+                  value={block.data.paddingBottom ?? 0}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: {
+                        ...block.data,
+                        paddingBottom: Number(e.target.value),
+                      },
+                    })
+                  }
+                />
+              </label>
+            </div>
+
             <div className="text-xs text-neutral-500">
-              Tip: use internal paths (e.g. <code>/about</code>) for same-site
-              links.
+              Outline uses <code>#9D231B</code> for border/text; Solid uses
+              <code>#9D231B</code> background with <code>#FBFBFB</code> text.
             </div>
           </div>
         )}
 
         {block.block_type === "slideshow" && isSlideshowData(block) && (
           <div className="space-y-3">
-            {/* Paths editor (keep your existing list UI) */}
+            {/* Paths editor */}
             {(block.data.paths ?? []).map((p, i) => (
               <div key={i} className="flex gap-2">
                 <input
@@ -600,7 +719,7 @@ function SortableItem({
               </label>
             </div>
 
-            {/* Size mode: aspect ratio or fixed height */}
+            {/* Size mode */}
             <div className="grid gap-2 md:grid-cols-2">
               <label className="text-sm text-black flex flex-col gap-1">
                 Aspect ratio (e.g., 16/9, 4/3, 1/1)
@@ -613,7 +732,7 @@ function SortableItem({
                       data: {
                         ...(block.data as SlideshowData),
                         aspectRatio: e.target.value,
-                        fixedHeightPx: undefined, // mutually exclusive
+                        fixedHeightPx: undefined,
                       },
                     })
                   }
@@ -635,7 +754,7 @@ function SortableItem({
                         fixedHeightPx: e.target.value
                           ? Number(e.target.value)
                           : undefined,
-                        aspectRatio: undefined, // mutually exclusive
+                        aspectRatio: undefined,
                       },
                     })
                   }
@@ -644,9 +763,68 @@ function SortableItem({
               </label>
             </div>
 
+            {/* NEW: Border controls */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <label className="text-sm text-black flex flex-col gap-1">
+                Border width (px)
+                <input
+                  type="number"
+                  min={0}
+                  className="rounded border p-2 text-black"
+                  value={block.data.borderWidthPx ?? 0}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: {
+                        ...(block.data as SlideshowData),
+                        borderWidthPx: Number(e.target.value) || 0,
+                      },
+                    })
+                  }
+                />
+              </label>
+              <label className="text-sm text-black flex flex-col gap-1">
+                Border color
+                <input
+                  type="text"
+                  className="rounded border p-2 text-black"
+                  value={block.data.borderColor ?? "#343330"}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: {
+                        ...(block.data as SlideshowData),
+                        borderColor: e.target.value || "#343330",
+                      },
+                    })
+                  }
+                  placeholder="#343330"
+                />
+              </label>
+              <label className="text-sm text-black flex flex-col gap-1">
+                Padding inside border (px)
+                <input
+                  type="number"
+                  min={0}
+                  className="rounded border p-2 text-black"
+                  value={block.data.paddingPx ?? 0}
+                  onChange={(e) =>
+                    debounced({
+                      ...block,
+                      data: {
+                        ...block.data,
+                        paddingPx: Number(e.target.value) || 0,
+                      },
+                    })
+                  }
+                />
+              </label>
+            </div>
+
             <div className="text-xs text-neutral-500">
               Choose an aspect ratio for responsive height, or set a fixed
-              height. Max width, align, and margins work like the Image block.
+              height. Max width, align, margins, and border work like the Image
+              block.
             </div>
           </div>
         )}
@@ -1161,12 +1339,21 @@ function ColumnsEditor({
   if (!isColumnsData(block)) return null;
 
   const cols = block.data.columns;
+  const vLeft  = block.data.vAlignLeft  ?? "top";
+  const vRight = block.data.vAlignRight ?? "top";
+
   const left = allBlocks
     .filter((x) => x.parent_id === block.id && x.slot === "left")
     .sort((a, b) => a.position - b.position);
   const right = allBlocks
     .filter((x) => x.parent_id === block.id && x.slot === "right")
     .sort((a, b) => a.position - b.position);
+
+  // helper to map setting -> Tailwind class
+  const vClass = (v: "top" | "middle" | "bottom") =>
+    v === "middle" ? "justify-center"
+    : v === "bottom" ? "justify-end"
+    : "justify-start";
 
   return (
     <div className="rounded-xl border bg-white p-4 shadow-sm">
@@ -1177,30 +1364,78 @@ function ColumnsEditor({
         </button>
       </div>
 
-      <label className="text-sm flex items-center gap-2 text-black mb-3">
-        Columns:
-        <select
-          className="rounded border p-1 text-black"
-          value={cols}
-          onChange={(e) =>
-            onChange({
-              ...block,
-              data: { columns: Number(e.target.value) as 1 | 2 } as ColumnsData,
-            })
-          }
-        >
-          <option value={1}>1</option>
-          <option value={2}>2</option>
-        </select>
-      </label>
+      {/* grid settings */}
+      <div className="flex flex-wrap gap-3 items-center mb-3">
+        <label className="text-sm flex items-center gap-2 text-black">
+          Columns:
+          <select
+            className="rounded border p-1 text-black"
+            value={cols}
+            onChange={(e) =>
+              onChange({
+                ...block,
+                data: {
+                  ...(block.data as ColumnsData),
+                  columns: Number(e.target.value) as 1 | 2,
+                },
+              })
+            }
+          >
+            <option value={1}>1</option>
+            <option value={2}>2</option>
+          </select>
+        </label>
 
-      <div
-        className={`grid gap-3 ${
-          cols === 2 ? "md:grid-cols-2" : "grid-cols-1"
-        }`}
-      >
-        {/* LEFT */}
-        <div className="space-y-3">
+        {/* NEW: vertical align pickers */}
+        <label className="text-sm flex items-center gap-2 text-black">
+          Left v-align:
+          <select
+            className="rounded border p-1 text-black"
+            value={vLeft}
+            onChange={(e) =>
+              onChange({
+                ...block,
+                data: {
+                  ...(block.data as ColumnsData),
+                  vAlignLeft: e.target.value as ColumnsData["vAlignLeft"],
+                },
+              })
+            }
+          >
+            <option value="top">Top</option>
+            <option value="middle">Middle</option>
+            <option value="bottom">Bottom</option>
+          </select>
+        </label>
+
+        {cols === 2 && (
+          <label className="text-sm flex items-center gap-2 text-black">
+            Right v-align:
+            <select
+              className="rounded border p-1 text-black"
+              value={vRight}
+              onChange={(e) =>
+                onChange({
+                  ...block,
+                  data: {
+                    ...(block.data as ColumnsData),
+                    vAlignRight: e.target.value as ColumnsData["vAlignRight"],
+                  },
+                })
+              }
+            >
+              <option value="top">Top</option>
+              <option value="middle">Middle</option>
+              <option value="bottom">Bottom</option>
+            </select>
+          </label>
+        )}
+      </div>
+
+      {/* columns preview */}
+      <div className={`grid gap-3 ${cols === 2 ? "md:grid-cols-2" : "grid-cols-1"}`}>
+        {/* LEFT column */}
+        <div className={`space-y-3 h-full flex flex-col ${vClass(vLeft)}`}>
           <SortableContext
             id={`col-left:${block.id}`}
             items={left.map((b) => b.id)}
@@ -1219,9 +1454,9 @@ function ColumnsEditor({
           <AddRow onAdd={(t) => addChild(block.id, "left", t)} />
         </div>
 
-        {/* RIGHT */}
+        {/* RIGHT column */}
         {cols === 2 && (
-          <div className="space-y-3">
+          <div className={`space-y-3 h-full flex flex-col ${vClass(vRight)}`}>
             <SortableContext
               id={`col-right:${block.id}`}
               items={right.map((b) => b.id)}

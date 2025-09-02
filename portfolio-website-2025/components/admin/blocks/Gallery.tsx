@@ -11,11 +11,11 @@ export default function GalleryEditor({
   block: GalleryBlock;
   onChange: (b: Block) => void;
 }) {
-  // normalize to items
-const items: GalleryItem[] =
-  Array.isArray(block.data.items) && block.data.items.length
-    ? block.data.items
-    : (block.data.paths ?? []).map(p => ({ path: p }));
+  // Normalize to items (support legacy `paths`)
+  const items: GalleryItem[] =
+    Array.isArray(block.data.items) && block.data.items.length
+      ? block.data.items
+      : (block.data.paths ?? []).map((p) => ({ path: p }));
 
   const updateItems = (next: GalleryItem[]) =>
     onChange({
@@ -32,8 +32,8 @@ const items: GalleryItem[] =
 
   return (
     <div className="space-y-3">
-      {/* gallery grid opts */}
-      <div className="flex items-center gap-3">
+      {/* Grid options */}
+      <div className="flex flex-wrap items-center gap-3">
         <label className="text-sm text-black flex items-center gap-2">
           Columns:
           <select
@@ -76,7 +76,8 @@ const items: GalleryItem[] =
         </label>
       </div>
 
-      {/* items */}
+      
+      {/* Items */}
       {items.map((it, i) => (
         <div key={i} className="rounded border p-3">
           <div className="grid gap-2 md:grid-cols-2">
@@ -119,7 +120,10 @@ const items: GalleryItem[] =
                   value={it.align ?? "left"}
                   onChange={(e) => {
                     const next = [...items];
-                    next[i] = { ...it, align: e.target.value as GalleryItem["align"] };
+                    next[i] = {
+                      ...it,
+                      align: e.target.value as GalleryItem["align"],
+                    };
                     updateItems(next);
                   }}
                 >
@@ -136,7 +140,11 @@ const items: GalleryItem[] =
                   value={it.captionAlign ?? "left"}
                   onChange={(e) => {
                     const next = [...items];
-                    next[i] = { ...it, captionAlign: e.target.value as GalleryItem["captionAlign"] };
+                    next[i] = {
+                      ...it,
+                      captionAlign: e.target
+                        .value as GalleryItem["captionAlign"],
+                    };
                     updateItems(next);
                   }}
                 >
@@ -155,7 +163,10 @@ const items: GalleryItem[] =
                   className="rounded border p-2 text-black"
                   value={it.widthPercent ?? 100}
                   onChange={(e) => {
-                    const v = Math.max(10, Math.min(100, Number(e.target.value) || 100));
+                    const v = Math.max(
+                      10,
+                      Math.min(100, Number(e.target.value) || 100)
+                    );
                     const next = [...items];
                     next[i] = { ...it, widthPercent: v };
                     updateItems(next);
@@ -172,7 +183,10 @@ const items: GalleryItem[] =
                     value={it.marginTop ?? 0}
                     onChange={(e) => {
                       const next = [...items];
-                      next[i] = { ...it, marginTop: Number(e.target.value) || 0 };
+                      next[i] = {
+                        ...it,
+                        marginTop: Number(e.target.value) || 0,
+                      };
                       updateItems(next);
                     }}
                   />
@@ -185,7 +199,10 @@ const items: GalleryItem[] =
                     value={it.marginBottom ?? 0}
                     onChange={(e) => {
                       const next = [...items];
-                      next[i] = { ...it, marginBottom: Number(e.target.value) || 0 };
+                      next[i] = {
+                        ...it,
+                        marginBottom: Number(e.target.value) || 0,
+                      };
                       updateItems(next);
                     }}
                   />
@@ -201,7 +218,10 @@ const items: GalleryItem[] =
                     value={it.marginLeft ?? 0}
                     onChange={(e) => {
                       const next = [...items];
-                      next[i] = { ...it, marginLeft: Number(e.target.value) || 0 };
+                      next[i] = {
+                        ...it,
+                        marginLeft: Number(e.target.value) || 0,
+                      };
                       updateItems(next);
                     }}
                   />
@@ -214,16 +234,73 @@ const items: GalleryItem[] =
                     value={it.marginRight ?? 0}
                     onChange={(e) => {
                       const next = [...items];
-                      next[i] = { ...it, marginRight: Number(e.target.value) || 0 };
+                      next[i] = {
+                        ...it,
+                        marginRight: Number(e.target.value) || 0,
+                      };
                       updateItems(next);
                     }}
                   />
                 </label>
               </div>
+
+              {/* NEW: Border controls */}
+              <label className="text-sm text-black flex flex-col gap-1">
+                Border width (px)
+                <input
+                  type="number"
+                  min={0}
+                  className="rounded border p-2 text-black"
+                  value={it.borderWidthPx ?? 0}
+                  onChange={(e) => {
+                    const next = [...items];
+                    next[i] = {
+                      ...it,
+                      borderWidthPx: Number(e.target.value) || 0,
+                    };
+                    updateItems(next);
+                  }}
+                />
+              </label>
+
+              <label className="text-sm text-black flex flex-col gap-1">
+                Border color
+                <input
+                  type="text"
+                  className="rounded border p-2 text-black"
+                  value={it.borderColor ?? "#343330"}
+                  onChange={(e) => {
+                    const next = [...items];
+                    next[i] = {
+                      ...it,
+                      borderColor: e.target.value || "#343330",
+                    };
+                    updateItems(next);
+                  }}
+                  placeholder="#343330"
+                />
+              </label>
+              <label className="text-sm text-black flex flex-col gap-1">
+                Border Padding (px)
+                <input
+                  type="number"
+                  min={0}
+                  className="rounded border p-2 text-black"
+                  value={it.paddingPx ?? 0}
+                  onChange={(e) => {
+                    const next = [...items];
+                    next[i] = {
+                      ...it,
+                      paddingPx: Number(e.target.value) || 0,
+                    };
+                    updateItems(next);
+                  }}
+                />
+              </label>
             </div>
           )}
 
-          <div className="mt-10 flex gap-2">
+          <div className="mt-6 flex gap-2">
             <button
               type="button"
               className="rounded border px-2 text-sm"
@@ -240,7 +317,8 @@ const items: GalleryItem[] =
               className="rounded border px-2 text-sm"
               onClick={() => {
                 const next = [...items];
-                if (i < next.length - 1) [next[i + 1], next[i]] = [next[i], next[i + 1]];
+                if (i < next.length - 1)
+                  [next[i + 1], next[i]] = [next[i], next[i + 1]];
                 updateItems(next);
               }}
             >
@@ -270,7 +348,8 @@ const items: GalleryItem[] =
       </button>
 
       <div className="text-xs text-neutral-500">
-        Each image can set alignment, caption alignment, width (% of its grid cell), and margins.
+        Each image can set alignment, caption alignment, width (% of its grid
+        cell), margins, and an optional #343330 border.
       </div>
     </div>
   );
