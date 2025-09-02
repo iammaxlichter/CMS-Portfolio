@@ -35,7 +35,7 @@ function getAnim(b: Block): AnimationSettings | undefined {
 
 function BlockView({ b }: { b: Block }) {
   const withPadding = (content: JSX.Element) => (
-    <div className="sm:px-16">{content}</div>
+    <div className="sm:px-8">{content}</div>
   );
 
   function wrapWithAnim(b: Block, el: JSX.Element) {
@@ -438,7 +438,7 @@ function ColumnsView({
 
   return (
     <div
-      className={`grid gap-6 ${cols === 2 ? "md:grid-cols-2" : "grid-cols-1"}`}
+      className={`grid ${cols === 2 ? "md:grid-cols-2" : "grid-cols-1"}`}
     >
       <div className="space-y-6">
         {left.map((child) =>
@@ -493,7 +493,7 @@ export default async function Page({
     .sort((a, b) => a.position - b.position);
 
   return (
-    <main className="mx-auto max-w-5xl p-6 mt-7 space-y-6">
+    <main className="mx-auto max-w-5xl p-6 pt-15 space-y-6">
       {root.map((b) =>
         b.block_type === "columns" ? (
           <ColumnsView key={b.id} block={b} all={all} />

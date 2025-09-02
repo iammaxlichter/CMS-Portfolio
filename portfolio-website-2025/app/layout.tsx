@@ -6,7 +6,7 @@ import "./globals.css";
 
 const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
-  weight: ["100","200","300","400","500","600","700","800","900"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
   variable: "--font-libre-franklin",
   adjustFontFallback: false, // Disables automatic fallback generation
@@ -29,11 +29,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
-        
+
       </head>
       <body className={`${libreFranklin.variable} antialiased`}>
         <Navbar />
-        {children}
+        <main className="min-h-screen bg-[#FBFBFB]">
+          {children}
+        </main>
         <Footer />
       </body>
     </html>

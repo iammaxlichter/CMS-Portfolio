@@ -8,3 +8,7 @@ centering images on a WHOLE column (if a LHS has a giant paragraph, I want the i
 bold current page on navbar
 home page
 favicon
+karoshi download
+bobalite page
+ability to make text red indicating hyperlinks
+contact and resume animations
