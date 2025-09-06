@@ -1,19 +1,1 @@
-add the 2 button variants DONE
-border on images and slideshow and gallery DONE
-margin on buttons DONE
-bold current page on navbar DONE
-centering images on a WHOLE column (if a LHS has a giant paragraph, I want the image on the right handside to be in the middle instead of at the top (maybe an option for that)) DONE
-
-update all pages with new buttons and button margins
-update all pages with new borders (any page with image slideshow or gallery)
-
-add links to linkedin pages through paragraphs like on soccer robot for teammates
-clicking an image on portfolio2023 makes it a bigger image the user can look at
-animation when opening the navbar in mobile (hamburger)
-
-home page
-favicon
-karoshi download
 bobalite page
-ability to make text red indicating hyperlinks
-contact and resume animations
