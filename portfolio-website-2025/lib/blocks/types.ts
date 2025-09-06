@@ -52,7 +52,13 @@ export type CardItem = {
   thumbMaxWidthPx?: number; 
 };
 
-export type CardGridData = { items: CardItem[] };
+export type CardGridData = {
+  items: CardItem[];
+  borderWidthPx?: number;
+  borderColor?: string;
+  paddingPx?: number;
+};
+
 export type TitleData = { text: string };
 export type SubtitleData = { text: string };
 export type ParagraphData = {
@@ -173,7 +179,7 @@ export const DefaultData: Record<BlockType, BlockData> = {
   button: { text: "Learn more", href: "/", variant: "outline", paddingTop: 0, paddingBottom: 0 },
   slideshow: { paths: [], borderWidthPx: 0, borderColor: "#343330", paddingPx: 0,  },
   date: { text: "Feb. 2025 – Present", align: "right" },
-  card_grid: { items: [] },
+  card_grid: { items: [], borderWidthPx: 0, borderColor: "#343330", paddingPx: 0 },
 };
 
 // Type guard functions

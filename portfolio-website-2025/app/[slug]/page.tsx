@@ -37,8 +37,8 @@ function getAnim(b: Block): AnimationSettings | undefined {
 
 const vClass = (v?: VAlign) =>
   v === "middle" ? "justify-center"
-  : v === "bottom" ? "justify-end"
-  : "justify-start";
+    : v === "bottom" ? "justify-end"
+      : "justify-start";
 
 function BlockView({ b }: { b: Block }) {
   const withPadding = (content: JSX.Element) => (
@@ -97,7 +97,7 @@ function BlockView({ b }: { b: Block }) {
           wrapWithAnim(
             b,
             <div
-              className="prose max-w-none prose-p:m-0"
+              className="prose max-w-none prose-p:m-0 [&_a]:text-[#9D231B] [&_a:hover]:underline [&_a:visited]:text-[#9D231B]"
               style={{ fontSize: fs, marginTop: mt, marginBottom: mb }}
               dangerouslySetInnerHTML={{ __html: b.data.html }}
             />
@@ -126,8 +126,8 @@ function BlockView({ b }: { b: Block }) {
           captionAlign === "center"
             ? "text-center"
             : captionAlign === "right"
-            ? "text-right"
-            : "text-left";
+              ? "text-right"
+              : "text-left";
 
         return withPadding(
           wrapWithAnim(
@@ -184,8 +184,8 @@ function BlockView({ b }: { b: Block }) {
           Array.isArray(b.data.items) && b.data.items.length
             ? b.data.items
             : (b.data.paths ?? []).map(
-                (p: string): GalleryItem => ({ path: p })
-              );
+              (p: string): GalleryItem => ({ path: p })
+            );
 
         const cols = ("cols" in b.data && b.data.cols) || 3;
         const gap = ("gap" in b.data && b.data.gap) || 12;
@@ -194,10 +194,10 @@ function BlockView({ b }: { b: Block }) {
           cols === 2
             ? "grid grid-cols-2" // 2 on mobile
             : cols === 3
-            ? "grid grid-cols-3" // ✅ 3 on mobile (and up)
-            : cols === 4
-            ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4" // 2→3→4 by breakpoint
-            : "grid grid-cols-2 md:grid-cols-3";
+              ? "grid grid-cols-3" // ✅ 3 on mobile (and up)
+              : cols === 4
+                ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4" // 2→3→4 by breakpoint
+                : "grid grid-cols-2 md:grid-cols-3";
 
         return withPadding(
           wrapWithAnim(
@@ -214,15 +214,15 @@ function BlockView({ b }: { b: Block }) {
                   (it.align ?? "left") === "center"
                     ? "justify-self-center"
                     : (it.align ?? "left") === "right"
-                    ? "justify-self-end"
-                    : "justify-self-start";
+                      ? "justify-self-end"
+                      : "justify-self-start";
 
                 const capAlignClass =
                   (it.captionAlign ?? "left") === "center"
                     ? "text-center"
                     : (it.captionAlign ?? "left") === "right"
-                    ? "text-right"
-                    : "text-left";
+                      ? "text-right"
+                      : "text-left";
 
                 const widthPct = it.widthPercent ?? 100;
 
@@ -273,18 +273,18 @@ function BlockView({ b }: { b: Block }) {
         const id = url?.match(/(?:v=|be\/)([A-Za-z0-9_-]{11})/)?.[1];
         return id
           ? withPadding(
-              wrapWithAnim(
-                b,
-                <div className="aspect-video">
-                  <iframe
-                    className="w-full h-full rounded-xl"
-                    src={`https://www.youtube.com/embed/${id}`}
-                    title="YouTube video"
-                    allowFullScreen
-                  />
-                </div>
-              )
+            wrapWithAnim(
+              b,
+              <div className="aspect-video">
+                <iframe
+                  className="w-full h-full rounded-xl"
+                  src={`https://www.youtube.com/embed/${id}`}
+                  title="YouTube video"
+                  allowFullScreen
+                />
+              </div>
             )
+          )
           : null;
       }
       return null;
@@ -297,7 +297,7 @@ function BlockView({ b }: { b: Block }) {
         const mb = b.data.paddingBottom ?? 0;
 
         const base =
-          "inline-flex items-center rounded-lg px-4 py-2 font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
+          "inline-flex items-center rounded-lg px-6 py-3 font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
         const outline =
           "border border-[#9D231B] text-[#9D231B] bg-transparent hover:bg-[#9D231B]/10 focus-visible:ring-[#9D231B]";
         const solid =
@@ -350,15 +350,15 @@ function BlockView({ b }: { b: Block }) {
           align === "center"
             ? "text-center"
             : align === "right"
-            ? "text-right"
-            : "text-left";
+              ? "text-right"
+              : "text-left";
 
         const displayClass =
           align === "right"
             ? "block ml-auto"
             : align === "center"
-            ? "block mx-auto"
-            : "block";
+              ? "block mx-auto"
+              : "block";
 
         return wrapWithAnim(
           b,
@@ -374,6 +374,10 @@ function BlockView({ b }: { b: Block }) {
     case "card_grid":
       if (isCardGridData(b)) {
         const items = b.data.items ?? [];
+        const bw = b.data.borderWidthPx ?? 0;
+        const bc = b.data.borderColor ?? "#343330";
+        const pad = b.data.paddingPx ?? 0;
+
         return withPadding(
           // ⬅ wrap the grid (once), not each card
           wrapWithAnim(
@@ -395,8 +399,8 @@ function BlockView({ b }: { b: Block }) {
                   align === "center"
                     ? "justify-self-center"
                     : align === "right"
-                    ? "justify-self-end"
-                    : "justify-self-start";
+                      ? "justify-self-end"
+                      : "justify-self-start";
 
                 const widthPct = Math.max(
                   10,
@@ -424,7 +428,7 @@ function BlockView({ b }: { b: Block }) {
                         // ignore silly-small caps; full width by default
                         maxWidth:
                           typeof it.thumbMaxWidthPx === "number" &&
-                          it.thumbMaxWidthPx >= 80
+                            it.thumbMaxWidthPx >= 80
                             ? `${it.thumbMaxWidthPx}px`
                             : undefined,
                       }}
@@ -432,6 +436,12 @@ function BlockView({ b }: { b: Block }) {
                       <Image
                         src={src}
                         alt={it.title || ""}
+                        style={{
+                          borderStyle: bw ? "solid" : undefined,
+                          borderWidth: bw ? `${bw}px` : undefined,
+                          borderColor: bw ? bc : undefined,
+                          padding: pad,
+                        }}
                         width={width}
                         height={height}
                         className="h-auto w-full rounded-lg border transition group-hover:opacity-90"
@@ -481,8 +491,8 @@ function ColumnsView({
 
   const vClass = (v?: VAlign) =>
     v === "middle" ? "justify-center"
-    : v === "bottom" ? "justify-end"
-    : "justify-start";
+      : v === "bottom" ? "justify-end"
+        : "justify-start";
 
   return (
     <div className={`grid ${cols === 2 ? "md:grid-cols-2" : "grid-cols-1"} items-stretch gap-6`}>

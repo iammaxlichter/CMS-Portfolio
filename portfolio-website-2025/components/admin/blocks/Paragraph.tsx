@@ -26,12 +26,21 @@ export default function Paragraph({
       after +
       value.slice(selectionEnd);
     setData({ html: next });
-    // restore caret around selection
     requestAnimationFrame(() => {
       ta.focus();
       const offset = before.length;
       ta.setSelectionRange(selectionStart + offset, selectionEnd + offset);
     });
+  };
+
+  const makeLink = () => {
+    const raw = window.prompt("Paste URL (https://…):", "")?.trim();
+    if (!raw) return;
+    const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+    surround(
+      `<a href="${href}" target="_blank" rel="noopener noreferrer">`,
+      "</a>"
+    );
   };
 
   return (
@@ -61,6 +70,9 @@ export default function Paragraph({
           title="Underline"
         >
           U
+        </button>
+        <button type="button" className="rounded border px-2 text-sm" onClick={makeLink}>
+          Link
         </button>
       </div>
 

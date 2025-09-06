@@ -1,6 +1,29 @@
+// app/contact/page.tsx (or wherever this component lives)
 'use client';
 
 import React, { useRef, useState } from 'react';
+import { motion, type Variants, type Transition } from 'framer-motion';
+
+const enterSpring: Transition = { type: 'spring', stiffness: 320, damping: 28 };
+
+const leftCol: Variants = {
+  hidden: { opacity: 0, x: -32 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: { ...enterSpring, when: 'beforeChildren', staggerChildren: 0.06 },
+  },
+};
+
+const rightCol: Variants = {
+  hidden: { opacity: 0, x: 32 },
+  show: { opacity: 1, x: 0, transition: enterSpring },
+};
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 8 },
+  show: { opacity: 1, y: 0, transition: enterSpring },
+};
 
 export default function ContactPage() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -9,14 +32,14 @@ export default function ContactPage() {
     lastName: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState<string>('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,8 +51,6 @@ export default function ContactPage() {
 
     try {
       const body = new FormData(formRef.current);
-
-      // Optional: set a useful subject on the Formspree email
       const computedSubject =
         formData.subject?.trim() ||
         `New message from ${formData.firstName || 'Unknown'} ${formData.lastName || ''}`.trim();
@@ -38,7 +59,7 @@ export default function ContactPage() {
       const resp = await fetch('https://formspree.io/f/mqadzlee', {
         method: 'POST',
         headers: { Accept: 'application/json' },
-        body
+        body,
       });
 
       if (resp.ok) {
@@ -50,7 +71,7 @@ export default function ContactPage() {
         setStatus('error');
         setErrorMsg(data?.errors?.[0]?.message || 'Something went wrong. Please try again.');
       }
-    } catch (err) {
+    } catch {
       setStatus('error');
       setErrorMsg('Network error. Please check your connection and try again.');
     }
@@ -60,61 +81,80 @@ export default function ContactPage() {
     <div className="min-h-screen bg-[#FBFBFB]">
       <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-32 py-32">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Left Column - About Me */}
-          <div>
-            <h1 className="text-5xl sm:text-5xl md:text-6xl lg:text-[67px] font-bold mb-1 leading-none tracking-tighter" style={{ color: '#343330' }}>
+          {/* LEFT: slide in from left */}
+          <motion.div
+            variants={leftCol}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+          >
+            <motion.h1
+              className="text-5xl sm:text-5xl md:text-6xl lg:text-[67px] font-bold mb-1 leading-none tracking-tighter"
+              style={{ color: '#343330' }}
+              variants={item}
+            >
               Discover more
-            </h1>
-            <h2 className="text-5xl sm:text-5xl md:text-6xl lg:text-[67px] font-bold mb-6 leading-none tracking-tighter" style={{ color: '#343330' }}>
+            </motion.h1>
+            <motion.h2
+              className="text-5xl sm:text-5xl md:text-6xl lg:text-[67px] font-bold mb-6 leading-none tracking-tighter"
+              style={{ color: '#343330' }}
+              variants={item}
+            >
               about me
-            </h2>
-            <p className="lg:text-[20px] md:text-[16px] sm:text-[10px] text-[#9D231B] mb-8">
+            </motion.h2>
+            <motion.p
+              className="lg:text-[20px] md:text-[16px] sm:text-[10px] text-[#9D231B] mb-8"
+              variants={item}
+            >
               Let's explore more about who I am as a person.
-            </p>
+            </motion.p>
 
-            <div>
-              <div className="border border-[#9D231B] rounded-tl-md rounded-tr-md p-6 bg-white">
+            <motion.div variants={item}>
+              <motion.div className="border border-[#9D231B] rounded-tl-md rounded-tr-md p-6 bg-white" variants={item}>
                 <div className="flex items-start">
                   <div className="text-[#9D231B] mr-3 mt-1">✓</div>
                   <p className="text-[#343330]">
-                    Senior Computer Science Undergraduate at The University of Texas at Dallas with a strong focus in full-stack web development and quality engineering.
+                    Software Engineer II at Paycom LLC working full-time in Irving, Texas
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="border-l border-r border-b border-[#9D231B] p-6 bg-white">
+              <motion.div className="border-l border-r border-b border-[#9D231B] p-6 bg-white" variants={item}>
                 <div className="flex items-start">
                   <div className="text-[#9D231B] mr-3 mt-0">✓</div>
-                  <p className="text-[#343330]">
-                    Current Software Engineer at Ayoka Systems.
-                  </p>
+                  <p className="text-[#343330]">Former Software Engineer at Ayoka Systems.</p>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="border-l border-r border-b border-[#9D231B] p-6 bg-white">
+              <motion.div className="border-l border-r border-b border-[#9D231B] p-6 bg-white" variants={item}>
                 <div className="flex items-start">
                   <div className="text-[#9D231B] mr-3 mt-1">✓</div>
                   <p className="text-[#343330]">
                     Former 2 time intern (Software Development and Quality Engineering) at Signet Jewelers
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="border-l border-r border-b border-[#9D231B] rounded-bl-md rounded-br-md p-6 bg-white">
+              <motion.div
+                className="border-l border-r border-b border-[#9D231B] rounded-bl-md rounded-br-md p-6 bg-white"
+                variants={item}
+              >
                 <div className="flex items-start">
                   <div className="text-[#9D231B] mr-3 mt-1">✓</div>
-                  <p className="text-[#343330]">
-                    Former Summer 2023 Software Development Intern at Southwest Solutions Group
-                  </p>
+                  <p className="text-[#343330]">Computer Science graduate from the University of Texas at Dallas</p>
                 </div>
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
 
-          {/* Right Column - Contact Form */}
-          <div>
+          {/* RIGHT: slide in from right */}
+          <motion.div
+            variants={rightCol}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+          >
             <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
-              {/* Name Fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="firstName" className="block text-[16px] font-bold text-[#343330] mb-1">
@@ -148,7 +188,6 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Email Field */}
               <div>
                 <label htmlFor="email" className="block text-[16px] font-bold text-[#343330] mb-1">
                   Email<span style={{ color: '#9D231B' }}>*</span>
@@ -165,7 +204,6 @@ export default function ContactPage() {
                 />
               </div>
 
-              {/* Subject Field */}
               <div>
                 <label htmlFor="subject" className="block text-[16px] font-bold text-[#343330] mb-1">
                   Subject
@@ -181,7 +219,6 @@ export default function ContactPage() {
                 />
               </div>
 
-              {/* Message Field */}
               <div>
                 <label htmlFor="message" className="block text-[16px] font-bold text-[#343330] mb-1">
                   Message<span style={{ color: '#9D231B' }}>*</span>
@@ -198,37 +235,46 @@ export default function ContactPage() {
                 />
               </div>
 
-              {/* Hidden helpers for Formspree */}
               <input type="hidden" name="_subject" value="" />
-              {/* If you want Formspree to redirect after success, uncomment below and set a URL: */}
-              {/* <input type="hidden" name="_redirect" value="https://your-site.com/thank-you" /> */}
 
-              {/* Required Fields Notice */}
               <p className="text-[12px] font-bold" style={{ color: '#9D231B' }}>
                 Fields marked with an asterisk (*) are required.
               </p>
 
-              {/* Submit Button */}
-              <button
+              <motion.button
                 type="submit"
                 disabled={status === 'loading'}
                 style={{ backgroundColor: '#9D231B', border: '1px solid #343330' }}
-                className="hover:opacity-90 text-white rounded font-medium py-3 px-12 rounded-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2"
+                className="text-white rounded font-medium py-3 px-12 rounded-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 hover:opacity-90"
+                whileHover={{ y: -1, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                transition={enterSpring}
               >
                 {status === 'loading' ? 'Submitting…' : 'Submit'}
-              </button>
+              </motion.button>
 
-              {/* Status Messages */}
               {status === 'success' && (
-                <div className="text-green-700 text-sm font-medium">Thanks! Your message has been sent.</div>
+                <motion.div
+                  className="text-green-700 text-sm font-medium"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={enterSpring}
+                >
+                  Thanks! Your message has been sent.
+                </motion.div>
               )}
               {status === 'error' && (
-                <div className="text-red-700 text-sm font-medium">
+                <motion.div
+                  className="text-red-700 text-sm font-medium"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={enterSpring}
+                >
                   {errorMsg || 'There was a problem sending your message.'}
-                </div>
+                </motion.div>
               )}
             </form>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

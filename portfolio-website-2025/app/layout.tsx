@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${libreFranklin.variable} antialiased`}>
         <Navbar />
-        <main className="min-h-screen bg-[#FBFBFB]">
+        <main className=" bg-[#FBFBFB]">
           {children}
         </main>
         <Footer />

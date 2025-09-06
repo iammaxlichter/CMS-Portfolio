@@ -435,7 +435,7 @@ function SortableItem({
                   placeholder="#343330"
                 />
               </label>
-<label className="text-sm text-black flex flex-col gap-1">
+              <label className="text-sm text-black flex flex-col gap-1">
                 Padding inside border (px)
                 <input
                   type="number"
@@ -642,7 +642,7 @@ function SortableItem({
             {/* Layout controls */}
             <div className="grid gap-2 md:grid-cols-3">
               <label className="text-sm text-black flex flex-col gap-1">
-                Display max width (px)
+                Max Width (px)
                 <input
                   type="number"
                   min={200}
@@ -722,7 +722,7 @@ function SortableItem({
             {/* Size mode */}
             <div className="grid gap-2 md:grid-cols-2">
               <label className="text-sm text-black flex flex-col gap-1">
-                Aspect ratio (e.g., 16/9, 4/3, 1/1)
+                Aspect ratio (e.g., 16/9)
                 <input
                   className="rounded border p-2 text-black"
                   value={block.data.aspectRatio ?? "16/9"}
@@ -997,7 +997,7 @@ function SortableItem({
                   </label>
 
                   <label className="text-sm text-black flex flex-col gap-1">
-                    Image max width (px)
+                    img mw (px)
                     <input
                       type="number"
                       min={0}
@@ -1020,6 +1020,62 @@ function SortableItem({
                         });
                       }}
                       placeholder="e.g. 360"
+                    />
+                  </label>
+                  <label className="text-sm text-black flex flex-col gap-1">
+                    Border width (px)
+                    <input
+                      type="number"
+                      min={0}
+                      className="rounded border p-2 text-black"
+                      value={block.data.borderWidthPx ?? 0}
+                      onChange={(e) =>
+                        debounced({
+                          ...block,
+                          data: {
+                            ...(block.data as CardGridData),
+                            borderWidthPx: Number(e.target.value) || 0,
+                          },
+                        })
+                      }
+                    />
+                  </label>
+
+                  <label className="text-sm text-black flex flex-col gap-1">
+                    Border color
+                    <input
+                      type="text"
+                      className="rounded border p-2 text-black"
+                      value={block.data.borderColor ?? "#343330"}
+                      onChange={(e) =>
+                        debounced({
+                          ...block,
+                          data: {
+                            ...(block.data as CardGridData),
+                            borderColor: e.target.value || "#343330",
+                          },
+                        })
+                      }
+                      placeholder="#343330"
+                    />
+                  </label>
+
+                  <label className="text-sm text-black flex flex-col gap-1">
+                    pd in border (px)
+                    <input
+                      type="number"
+                      min={0}
+                      className="rounded border p-2 text-black"
+                      value={block.data.paddingPx ?? 0}
+                      onChange={(e) =>
+                        debounced({
+                          ...block,
+                          data: {
+                            ...(block.data as CardGridData),
+                            paddingPx: Number(e.target.value) || 0,
+                          },
+                        })
+                      }
                     />
                   </label>
                 </div>
@@ -1339,7 +1395,7 @@ function ColumnsEditor({
   if (!isColumnsData(block)) return null;
 
   const cols = block.data.columns;
-  const vLeft  = block.data.vAlignLeft  ?? "top";
+  const vLeft = block.data.vAlignLeft ?? "top";
   const vRight = block.data.vAlignRight ?? "top";
 
   const left = allBlocks
@@ -1352,8 +1408,8 @@ function ColumnsEditor({
   // helper to map setting -> Tailwind class
   const vClass = (v: "top" | "middle" | "bottom") =>
     v === "middle" ? "justify-center"
-    : v === "bottom" ? "justify-end"
-    : "justify-start";
+      : v === "bottom" ? "justify-end"
+        : "justify-start";
 
   return (
     <div className="rounded-xl border bg-white p-4 shadow-sm">
