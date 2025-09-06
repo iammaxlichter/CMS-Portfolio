@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import SignOutButton from "@/components/admin/SignOutButton"; 
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function AdminHome() {
 
   return (
     <main className="mx-auto max-w-4xl p-6 space-y-8">
+      <SignOutButton />
       {/* Quick tools */}
       <div className="flex gap-2">
         <Link
