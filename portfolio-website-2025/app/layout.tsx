@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Libre_Franklin } from "next/font/google";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer"
 import "./globals.css";
 
 const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
-  weight: ["100","200","300","400","500","600","700","800","900"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
   variable: "--font-libre-franklin",
   adjustFontFallback: false, // Disables automatic fallback generation
@@ -15,6 +16,9 @@ const libreFranklin = Libre_Franklin({
 export const metadata: Metadata = {
   title: "Portfolio Website",
   description: "Max Lichter Portfolio",
+    icons: {
+    icon: "/images/other/logoWhite.png", 
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -28,11 +32,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
-        
+
+        <link rel="icon" type="image/png" href="/images/other/logoWhite.png" />
       </head>
       <body className={`${libreFranklin.variable} antialiased`}>
         <Navbar />
-        {children}
+        <main className=" bg-[#FBFBFB]">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

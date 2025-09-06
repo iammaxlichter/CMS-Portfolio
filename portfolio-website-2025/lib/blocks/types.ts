@@ -12,6 +12,17 @@ export type BlockType =
   | "date"
   | "card_grid";
 
+export type AnimationType =
+  | "slideInLeft"
+  | "slideInRight"
+  | "slideInTop"
+  | "slideInBottom"
+  | "fadeIn";
+
+
+export type ButtonVariant = "outline" | "solid";
+export type VAlign = "top" | "middle" | "bottom";
+
 export type GalleryItem = {
   path: string;
   alt?: string;
@@ -22,10 +33,32 @@ export type GalleryItem = {
   marginBottom?: number;
   marginLeft?: number;
   marginRight?: number;
+  borderWidthPx?: number;
+  borderColor?: string; 
+  paddingPx?: number;
 };
 
-export type CardItem = { title: string; href: string; img: string; caption?: string; };
-export type CardGridData = { items: CardItem[] };
+export type CardItem = {
+  title: string;
+  href: string;
+  img: string;
+  caption?: string;
+  align?: "left" | "center" | "right"; 
+  widthPercent?: number;              
+  marginTop?: number;
+  marginBottom?: number;
+  marginLeft?: number;
+  marginRight?: number;
+  thumbMaxWidthPx?: number; 
+};
+
+export type CardGridData = {
+  items: CardItem[];
+  borderWidthPx?: number;
+  borderColor?: string;
+  paddingPx?: number;
+};
+
 export type TitleData = { text: string };
 export type SubtitleData = { text: string };
 export type ParagraphData = {
@@ -46,18 +79,52 @@ export type ImageData = {
   marginBottom?: number;      
   captionMarginTop?: number;  
   captionMarginBottom?: number;
+  borderWidthPx?: number;
+  borderColor?: string; 
+  paddingPx?: number;
 };
 export type GalleryData = {
   items?: GalleryItem[];   // new shape
   paths?: string[];        // legacy shape
-  cols?: 2 | 3;
+  cols?: 2 | 3 | 4;
   gap?: number;
 };
-         
+   
+export type AnimationSettings = {
+  type: AnimationType;
+  durationMs?: number; // default 600
+  delayMs?: number;    // default 0
+};
+
 export type VideoData = { url: string };
-export type ColumnsData = { columns: 1 | 2 };
-export type ButtonData = { text: string; href: string };
-export type SlideshowData = { paths: string[] };
+export type ColumnsData = {
+  columns: 1 | 2;
+  vAlignLeft?: "top" | "middle" | "bottom";
+  vAlignRight?: "top" | "middle" | "bottom";
+};
+
+
+export type ButtonData = {
+  text: string;
+  href: string;
+  variant?: ButtonVariant;
+  paddingTop?: number;
+  paddingBottom?: number; 
+};
+
+export type SlideshowData = {
+  paths: string[];
+  displayMaxWidth?: number;
+  align?: "left" | "center" | "right";
+  marginTop?: number;
+  marginBottom?: number;
+  aspectRatio?: string;       
+  fixedHeightPx?: number;     
+  borderWidthPx?: number;
+  borderColor?: string; 
+  paddingPx?: number;
+};
+
 export type DateData = { text: string; align?: "left" | "center" | "right" };
 
 export type BlockData =
@@ -101,14 +168,18 @@ export const DefaultData: Record<BlockType, BlockData> = {
     marginBottom: 16,
     captionMarginTop: 4,
     captionMarginBottom: 4,
+    borderWidthPx: 0,
+    borderColor: "#343330", 
+    paddingPx: 0,
+    
   },
-  gallery: { items: [], cols: 3, gap: 12 },
+  gallery: { items: [], cols: 3, gap: 12, },
   video_youtube: { url: "" },
-  columns: { columns: 2 },
-  button: { text: "Learn more", href: "/" },
-  slideshow: { paths: [] },
+  columns: { columns: 2, vAlignLeft: "top", vAlignRight: "top" },
+  button: { text: "Learn more", href: "/", variant: "outline", paddingTop: 0, paddingBottom: 0 },
+  slideshow: { paths: [], borderWidthPx: 0, borderColor: "#343330", paddingPx: 0,  },
   date: { text: "Feb. 2025 – Present", align: "right" },
-  card_grid: { items: [] },
+  card_grid: { items: [], borderWidthPx: 0, borderColor: "#343330", paddingPx: 0 },
 };
 
 // Type guard functions
@@ -155,3 +226,5 @@ export function isDateData(block: Block): block is Block & { data: DateData } {
 export function isCardGridData(block: Block): block is Block & { data: CardGridData } {
   return block.block_type === "card_grid";
 }
+
+export type WithAnim = { _anim?: AnimationSettings };

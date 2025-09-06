@@ -24,3 +24,71 @@ body {
   color: var(--foreground);
 }
 
+/* ===== Block animations ===== */
+@keyframes slide-in-left {
+  from { transform: translateX(-54px); opacity: 0; }
+  to   { transform: translateX(0);      opacity: 1; }
+}
+@keyframes slide-in-right {
+  from { transform: translateX(54px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes slide-in-top {
+  from { transform: translateY(-54px); opacity: 0; }
+  to   { transform: translateY(0);      opacity: 1; }
+}
+@keyframes slide-in-bottom {
+  from { transform: translateY(54px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Base class - sets up the initial hidden state */
+.anim-base {
+  --anim-dur: 600ms;
+  --anim-delay: 0ms;
+  will-change: transform, opacity;
+}
+
+/* Default state: hidden and positioned at start */
+.anim-base.anim-paused {
+  opacity: 0;
+}
+
+/* Initial positions for each animation type when paused */
+.anim-slideInLeft.anim-paused   { transform: translateX(-104px); }
+.anim-slideInRight.anim-paused  { transform: translateX(104px); }
+.anim-slideInTop.anim-paused    { transform: translateY(-104px); }
+.anim-slideInBottom.anim-paused { transform: translateY(104px); }
+.anim-fadeIn.anim-paused        { --noop: 1; }
+
+/* When running, apply the actual animation */
+.anim-running.anim-slideInLeft {
+  animation: slide-in-left var(--anim-dur) ease-out var(--anim-delay) both;
+}
+.anim-running.anim-slideInRight {
+  animation: slide-in-right var(--anim-dur) ease-out var(--anim-delay) both;
+}
+.anim-running.anim-slideInTop {
+  animation: slide-in-top var(--anim-dur) ease-out var(--anim-delay) both;
+}
+.anim-running.anim-slideInBottom {
+  animation: slide-in-bottom var(--anim-dur) ease-out var(--anim-delay) both;
+}
+.anim-running.anim-fadeIn {
+  animation: fade-in var(--anim-dur) ease-out var(--anim-delay) both;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .anim-base { 
+    opacity: 1 !important; 
+    transform: none !important;
+  }
+  .anim-running { 
+    animation: none !important; 
+  }
+}

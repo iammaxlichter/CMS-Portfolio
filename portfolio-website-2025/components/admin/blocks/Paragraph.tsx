@@ -19,14 +19,28 @@ export default function Paragraph({
     if (!ta) return;
     const { selectionStart, selectionEnd, value } = ta;
     const sel = value.slice(selectionStart, selectionEnd) || "";
-    const next = value.slice(0, selectionStart) + before + sel + after + value.slice(selectionEnd);
+    const next =
+      value.slice(0, selectionStart) +
+      before +
+      sel +
+      after +
+      value.slice(selectionEnd);
     setData({ html: next });
-    // restore caret around selection
     requestAnimationFrame(() => {
       ta.focus();
       const offset = before.length;
       ta.setSelectionRange(selectionStart + offset, selectionEnd + offset);
     });
+  };
+
+  const makeLink = () => {
+    const raw = window.prompt("Paste URL (https://…):", "")?.trim();
+    if (!raw) return;
+    const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+    surround(
+      `<a href="${href}" target="_blank" rel="noopener noreferrer">`,
+      "</a>"
+    );
   };
 
   return (
@@ -56,6 +70,9 @@ export default function Paragraph({
           title="Underline"
         >
           U
+        </button>
+        <button type="button" className="rounded border px-2 text-sm" onClick={makeLink}>
+          Link
         </button>
       </div>
 
@@ -103,8 +120,14 @@ export default function Paragraph({
       </div>
 
       <div className="text-xs text-neutral-500">
-        Tip: Use the toolbar or manually type <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;u&gt;</code>.
-        You can also add links with <code>&lt;a href="…" target="_blank" rel="noopener"&gt;…&lt;/a&gt;</code>.
+        Tip: Use the toolbar or manually type <code>&lt;strong&gt;</code>,{" "}
+        <code>&lt;em&gt;</code>, <code>&lt;u&gt;</code>. You can also add links
+        with
+        <code>
+          &lt;a href=&quot;…&quot; target=&quot;_blank&quot;
+          rel=&quot;noopener&quot;&gt;…&lt;/a&gt;
+        </code>
+        .
       </div>
     </div>
   );
