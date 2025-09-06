@@ -16,6 +16,9 @@ const libreFranklin = Libre_Franklin({
 export const metadata: Metadata = {
   title: "Portfolio Website",
   description: "Max Lichter Portfolio",
+    icons: {
+    icon: "/images/other/logoWhite.png", 
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -30,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           referrerPolicy="no-referrer"
         />
 
+        <link rel="icon" type="image/png" href="/images/other/logoWhite.png" />
       </head>
       <body className={`${libreFranklin.variable} antialiased`}>
         <Navbar />
