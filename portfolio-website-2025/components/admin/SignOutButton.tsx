@@ -15,13 +15,12 @@ export default function SignOutButton() {
         try {
           setBusy(true);
           await supabase.auth.signOut();
-          // tell the server to clear Supabase cookies (Next 15)
           await fetch('/api/auth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ event: 'SIGNED_OUT', session: null }),
           });
-          router.replace('/'); // or '/signin'
+          router.replace('/');
         } finally {
           setBusy(false);
         }
