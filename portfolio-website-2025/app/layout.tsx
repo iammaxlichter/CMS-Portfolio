@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Libre_Franklin } from "next/font/google";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/site/nav/Navbar";
 import Footer from "@/components/Footer"
 import "./globals.css";
 

@@ -2,7 +2,7 @@
 export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
-import NavbarClient from "./NavbarClient";
+import NavbarClient from "../../NavbarClient";
 
 type Item = { label: string; href: string };
 type Row = {
