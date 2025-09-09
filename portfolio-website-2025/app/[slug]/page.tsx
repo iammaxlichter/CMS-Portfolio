@@ -17,11 +17,11 @@ import {
 } from "@/lib/blocks/types";
 
 import type { VAlign } from "@/lib/blocks/types";
-
+import { notFound } from "next/navigation";
 import type { AnimationSettings, WithAnim } from "@/lib/blocks/types";
 import Slideshow from "@/components/admin/blocks/Slideshow";
 import { JSX } from "react";
-import AnimOnView from "@/components/AnimOnView";
+import AnimOnView from "@/components/ui/AnimOnView";
 
 const animClassMap = {
   slideInLeft: "anim-slideInLeft",
@@ -525,34 +525,48 @@ function ColumnsView({
 export default async function Page({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  // Await the params Promise
-  const { slug } = await params;
+  const { slug } =  params;
 
   const supabase = await createClient();
-  const { data: page } = await supabase
+
+  
+  const {
+    data: page,
+    error: pageErr,
+  } = await supabase
     .from("pages")
     .select("*")
     .eq("slug", slug)
     .maybeSingle();
 
-  if (!page || !page.published) return null;
+  if (pageErr) {
+    throw new Error(`Supabase pages fetch failed: ${pageErr.message}`);
+  }
+  if (!page || !page.published) {
+    return notFound(); 
+  }
 
-  const { data: blocks } = await supabase
+  const {
+    data: blocks,
+    error: blocksErr,
+  } = await supabase
     .from("content_blocks")
     .select("id,page_id,block_type,data,position,parent_id,slot")
     .eq("page_id", page.id)
     .order("position", { ascending: true });
 
+  if (blocksErr) {
+    throw new Error(`Supabase blocks fetch failed: ${blocksErr.message}`);
+  }
+
   const all = (blocks ?? []) as Block[];
-  const root = all
-    .filter((b) => !b.parent_id)
-    .sort((a, b) => a.position - b.position);
+  const root = all.filter(b => !b.parent_id).sort((a, b) => a.position - b.position);
 
   return (
     <main className="mx-auto max-w-5xl p-6 pt-15 space-y-6">
-      {root.map((b) =>
+      {root.map(b =>
         b.block_type === "columns" ? (
           <ColumnsView key={b.id} block={b} all={all} />
         ) : (

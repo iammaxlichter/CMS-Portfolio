@@ -2,7 +2,7 @@
 export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
-import NavOrderBoard from "@/components/admin/NavOrderBoard";
+import NavOrderBoard from "@/components/admin/editor/NavOrderBoard";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 

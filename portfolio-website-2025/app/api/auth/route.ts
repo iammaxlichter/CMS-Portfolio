@@ -1,3 +1,4 @@
+// app/api/auth/route.ts
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -33,6 +34,16 @@ export async function POST(req: Request) {
     });
   } else if (event === "SIGNED_OUT") {
     await supabase.auth.signOut();
+
+    cookieStore.set({
+      name: "mfa_ok",
+      value: "",
+      path: "/",
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
   }
 
   return NextResponse.json({ ok: true });

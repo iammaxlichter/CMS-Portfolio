@@ -5,11 +5,8 @@ type Props = PropsWithChildren<{
   className?: string;
   durationMs?: number;
   delayMs?: number;
-  /** minimum ratio to allow (used as a fallback for very tall elements) */
-  threshold?: number;   // e.g. 0.2
-  /** require the whole element to be inside the viewport before playing */
+  threshold?: number;
   requireFull?: boolean;
-  /** play once and stay visible */
   once?: boolean;
 }>;
 
@@ -18,8 +15,8 @@ export default function AnimOnView({
   className = "",
   durationMs = 600,
   delayMs = 0,
-  threshold = 0.1,      // ✅ low, so tall elements can still animate
-  requireFull = true,   // ✅ “full in view” by default
+  threshold = 0.1,
+  requireFull = true,
   once = true,
 }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
