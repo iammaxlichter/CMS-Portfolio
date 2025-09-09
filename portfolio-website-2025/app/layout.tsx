@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Libre_Franklin } from "next/font/google";
 import Navbar from "@/components/site/nav/Navbar";
-import Footer from "@/components/Footer"
+import Footer from "@/components/site/footer/Footer"
 import "./globals.css";
 
 const libreFranklin = Libre_Franklin({

@@ -1,6 +1,6 @@
 // app/admin/[id]/page.tsx 
 import { createClient } from "@/lib/supabase/server";
-import BlockEditor from "@/components/admin/BlockEditor";
+import BlockEditor from "@/components/admin/editor/BlockEditor";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";

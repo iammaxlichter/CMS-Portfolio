@@ -2,7 +2,7 @@
 import { memo } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import AnimationPanel from "@/components/admin/AnimationPanel";
+import AnimationPanel from "@/components/admin/editor/AnimationPanel";
 import type { Block } from "@/lib/blocks/types";
 
 type Props = {
