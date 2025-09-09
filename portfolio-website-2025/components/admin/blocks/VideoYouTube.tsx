@@ -1,6 +1,6 @@
 "use client";
-import type { Block, VideoData } from "@/lib/blocks/types";
-import { isVideoData } from "@/lib/blocks/types";
+import type { Block, VideoData } from "@/lib/blocks";
+import { isVideoData } from "@/lib/blocks";
 
 export default function VideoYouTubeEditor({
   block,

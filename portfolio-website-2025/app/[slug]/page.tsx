@@ -1,7 +1,7 @@
 // app/[slug]/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import Image from "next/image";
-import type { Block, GalleryItem } from "@/lib/blocks/types";
+import type { Block, GalleryItem } from "@/lib/blocks";
 import {
   isTitleData,
   isSubtitleData,
@@ -14,11 +14,11 @@ import {
   isSlideshowData,
   isDateData,
   isCardGridData,
-} from "@/lib/blocks/types";
+} from "@/lib/blocks";
 
-import type { VAlign } from "@/lib/blocks/types";
+import type { VAlign } from "@/lib/blocks";
 import { notFound } from "next/navigation";
-import type { AnimationSettings, WithAnim } from "@/lib/blocks/types";
+import type { AnimationSettings, WithAnim } from "@/lib/blocks";
 import Slideshow from "@/components/admin/blocks/Slideshow";
 import { JSX } from "react";
 import AnimOnView from "@/components/ui/AnimOnView";

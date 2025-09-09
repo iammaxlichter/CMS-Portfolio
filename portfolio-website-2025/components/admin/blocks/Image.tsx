@@ -1,6 +1,6 @@
 "use client";
-import type { Block } from "@/lib/blocks/types";
-import { isImageData } from "@/lib/blocks/types";
+import type { Block } from "@/lib/blocks";
+import { isImageData } from "@/lib/blocks";
 
 export default function ImageEditor({
   block,

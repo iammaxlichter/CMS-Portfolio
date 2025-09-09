@@ -1,5 +1,5 @@
 "use client";
-import type { Block, AnimationSettings, WithAnim } from "@/lib/blocks/types";
+import type { Block, AnimationSettings, WithAnim } from "@/lib/blocks";
 
 export default function AnimationPanel({
   block,

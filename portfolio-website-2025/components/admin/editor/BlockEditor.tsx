@@ -13,7 +13,7 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
-import type { Block, BlockType } from "@/lib/blocks/types";
+import type { Block, BlockType } from "@/lib/blocks";
 import BlockEditors from "@/components/admin/blocks/registry";
 import ColumnsEditor from "@/components/admin/blocks/ColumnsEditor";
 import DropZone from "@/components/admin/dnd/DropZone";
