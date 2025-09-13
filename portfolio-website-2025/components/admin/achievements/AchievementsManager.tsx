@@ -223,7 +223,7 @@ function SortableRow({
                         onPointerDown={(e) => e.stopPropagation()}
                     />
 
-                    <label className="text-xs flex items-center gap-1 text-neutral-700">
+                    <label className="text-xs flex items-center gap-1 text-neutral-700 cursor-pointer">
                         <input
                             type="checkbox"
                             name={`published-${row.id}`}
@@ -233,17 +233,17 @@ function SortableRow({
                         />
                         Published
                     </label>
+
                 </div>
 
                 {deleteFormId && (
                     <button
-                        type="button"                          
+                        type="button"
                         onClick={handleDeleteClick}
-                        onPointerDown={(e) => e.stopPropagation()} 
-                        className="self-center rounded border px-2.5 py-1.5 text-xs text-red-700"
+                        onPointerDown={(e) => e.stopPropagation()}
+                        className="self-center rounded border px-2.5 py-1.5 text-xs text-red-700 cursor-pointer hover:bg-red-50"
                         title="Delete"
-                        aria-label={`Delete achievement ${row.text.slice(0, 30)}…`}
-                    >
+                        aria-label={`Delete achievement ${row.text.slice(0, 30)}…`}>
                         Delete
                     </button>
                 )}

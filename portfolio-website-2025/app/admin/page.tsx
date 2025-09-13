@@ -154,14 +154,17 @@ export default async function AdminHome() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Link className="text-blue-600" href={`/admin/${p.id}`}>
+              <Link
+                className="text-blue-600 hover:underline cursor-pointer"
+                href={`/admin/${p.id}`}>
                 Edit
               </Link>
+
               {!p.published && (
                 <form action={deleteDraft}>
                   <input type="hidden" name="id" value={p.id} />
                   <button
-                    className="text-red-600 hover:underline"
+                    className="text-red-600 hover:underline cursor-pointer"
                     title="Delete draft"
                   >
                     Delete

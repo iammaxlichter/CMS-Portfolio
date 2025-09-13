@@ -364,13 +364,16 @@ export default function NavOrderBoard({
         <button
           type="submit"
           disabled={!isDirty || isPending}
-          className={`rounded px-3 py-2 text-sm text-white transition
-            ${isDirty && !isPending ? "bg-black hover:bg-neutral-900" : "bg-black/60 cursor-not-allowed"}
-          `}
+          className={`rounded px-3 py-2 text-sm text-white transition-colors ${isDirty && !isPending
+            ? "bg-black hover:bg-neutral-700 cursor-pointer"
+            : "bg-black/60 cursor-not-allowed"
+            }
+            `}
           aria-disabled={!isDirty || isPending}
         >
           {isPending ? "Saving…" : isDirty ? "Save navbar order" : "No changes"}
         </button>
+
 
         <span
           aria-live="polite"

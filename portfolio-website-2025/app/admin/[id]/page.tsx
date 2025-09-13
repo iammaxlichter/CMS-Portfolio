@@ -48,18 +48,38 @@ export default async function EditPage({
 
       <form action={saveMeta} className="space-y-3">
         <input type="hidden" name="id" defaultValue={page?.id} />
-        <input
-          name="title"
-          defaultValue={page?.title}
-          placeholder="Page title"
-          className="w-full rounded border p-2"
-        />
-        <input
-          name="slug"
-          defaultValue={page?.slug}
-          placeholder="Page slug"
-          className="w-full rounded border p-2"
-        />
+        <div>
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-neutral-700 mb-1"
+          >
+            Page Title
+          </label>
+          <input
+            id="title"
+            name="title"
+            defaultValue={page?.title}
+            placeholder="Page title"
+            className="w-full rounded border p-2 bg-white"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="slug"
+            className="block text-sm font-medium text-neutral-700 mb-1"
+          >
+            Page Slug
+          </label>
+          <input
+            id="slug"
+            name="slug"
+            defaultValue={page?.slug}
+            placeholder="Page slug"
+            className="w-full rounded border p-2 bg-white"
+          />
+        </div>
+
 
         <div className="space-y-2">
           <label className="block text-sm font-medium">Page Type:</label>
