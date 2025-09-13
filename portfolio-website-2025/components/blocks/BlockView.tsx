@@ -1,4 +1,3 @@
-import Slideshow from "@/components/admin/blocks/Slideshow";
 import type {
     Block,
     WithAnim,
@@ -9,6 +8,7 @@ import type {
     GalleryData,
     VideoData,
     ButtonData,
+    SlideshowData,
     DateData,
     CardGridData,
 } from "@/lib/blocks";
@@ -34,6 +34,7 @@ import VideoYouTube from "./VideoYouTube";
 import ButtonBlock from "./ButtonBlock";
 import DateText from "./DateText";
 import CardGrid from "./CardGrid";
+import Slideshow from "./Slideshow";
 
 export default function BlockView({ b }: { b: Block }) {
     switch (b.block_type) {
@@ -73,21 +74,9 @@ export default function BlockView({ b }: { b: Block }) {
             ) : null;
 
         case "slideshow":
-            return isSlideshowData(b) ? (
-                <div className="sm:px-8">
-                    <Slideshow
-                        paths={b.data.paths ?? []}
-                        displayMaxWidth={b.data.displayMaxWidth ?? 1200}
-                        align={b.data.align ?? "left"}
-                        marginTop={b.data.marginTop ?? 16}
-                        marginBottom={b.data.marginBottom ?? 16}
-                        aspectRatio={b.data.aspectRatio}
-                        fixedHeightPx={b.data.fixedHeightPx}
-                        borderColor={b.data.borderColor}
-                        borderWidthPx={b.data.borderWidthPx}
-                    />
-                </div>
-            ) : null;
+            return (
+                <Slideshow data={b.data as SlideshowData & Partial<WithAnim>} />
+            );
 
         case "date":
             return isDateData(b) ? (

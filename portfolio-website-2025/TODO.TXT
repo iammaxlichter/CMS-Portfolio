@@ -1,0 +1,4 @@
+a way to upload pictures through the admin page and have 
+them be stored auto in my repo (no codebase required)
+
+images need to have a grow feature
