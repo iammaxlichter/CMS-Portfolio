@@ -1,4 +1,4 @@
-// app/admin/reorder/page.tsx
+// app/admin/navreorder/page.tsx
 export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
@@ -59,5 +59,5 @@ async function saveNavOrder(formData: FormData) {
   await Promise.all([updateGroup(projects), updateGroup(experience), updateGroup(standalones)]);
 
   revalidatePath("/");
-  revalidatePath("/admin/reorder");
+  revalidatePath("/admin/navreorder");
 }
