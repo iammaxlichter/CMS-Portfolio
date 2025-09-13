@@ -5,8 +5,16 @@ import type { Block } from "@/lib/blocks";
 import BlockView from "@/components/blocks/BlockView";
 import ColumnsView from "@/components/blocks/ColumnsView";
 
-export default async function Page({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function Page({
+  params,
+}: {
+  // params can be async and values can be string | string[]
+  params: Promise<{ slug: string | string[] }>;
+}) {
+  const p = await params;
+  const slug = Array.isArray(p.slug) ? p.slug[0] : p.slug;
+  if (!slug) return notFound();
+
   const supabase = await createClient();
 
   const { data: page, error: pageErr } = await supabase
@@ -27,7 +35,9 @@ export default async function Page({ params }: { params: { slug: string } }) {
   if (blocksErr) throw new Error(`Supabase blocks fetch failed: ${blocksErr.message}`);
 
   const all = (blocks ?? []) as Block[];
-  const root = all.filter((b) => !b.parent_id).sort((a, b) => a.position - b.position);
+  const root = all
+    .filter((b) => !b.parent_id)
+    .sort((a, b) => a.position - b.position);
 
   return (
     <main className="mx-auto max-w-5xl p-6 pt-15 space-y-6">

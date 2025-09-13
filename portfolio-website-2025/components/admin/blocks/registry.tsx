@@ -9,7 +9,7 @@ import ImageEditor from "@/components/admin/blocks/Image";
 import GalleryEditor from "@/components/admin/blocks/Gallery";
 import VideoYouTubeEditor from "@/components/admin/blocks/VideoYouTube";
 import ButtonEditor from "@/components/admin/blocks/Button";
-import SlideshowEditor from "@/components/admin/blocks/Slideshow"; // editor, not viewer
+import SlideshowEditor from "@/components/admin/blocks/SlideshowEditor";
 import DateEditor from "@/components/admin/blocks/Date";
 import CardGridEditor from "@/components/admin/blocks/CardGrid";
 
