@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET() {
   const supabase = await createClient();
 
-  // If you switched names, update the path below
   const { data } = supabase
     .storage
     .from("resume")
@@ -15,7 +14,6 @@ export async function GET() {
     return NextResponse.json({ error: "Resume not found" }, { status: 404 });
   }
 
-  // Fetch the file from Supabase, then stream it back with attachment headers
   const res = await fetch(publicUrl, { cache: "no-store" });
   if (!res.ok) {
     return NextResponse.json({ error: "Failed to fetch resume" }, { status: 500 });

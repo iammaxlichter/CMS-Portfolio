@@ -115,7 +115,6 @@ export default function NavbarClient({
   const projectsActive = projects.some((it) => it.href === pathname);
   const experienceActive = experience.some((it) => it.href === pathname);
 
-  // hamburger line variants
   const topVar = {
     closed: { y: 0, rotate: 0 },
     open: { y: 6, rotate: 45 },

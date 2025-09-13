@@ -1,6 +1,6 @@
 "use client";
-import type { Block, TitleData } from "@/lib/blocks/types";
-import { isTitleData } from "@/lib/blocks/types";
+import type { Block, TitleData } from "@/lib/blocks";
+import { isTitleData } from "@/lib/blocks";
 
 export default function TitleEditor({
   block,

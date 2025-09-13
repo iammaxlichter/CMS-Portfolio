@@ -46,9 +46,6 @@ export default async function EditPage({
         ← Back to Admin
       </Link>
 
-      
-
-
       <form action={saveMeta} className="space-y-3">
         <input type="hidden" name="id" defaultValue={page?.id} />
         <input
@@ -137,7 +134,6 @@ async function saveMeta(formData: FormData) {
   const rawKind = String(formData.get("kind"));
   const published = !!formData.get("published");
 
-  // Validate the kind field
   const allowedKinds = new Set(["project", "experience", "additional", "standalone"]);
   const kind = allowedKinds.has(rawKind) ? rawKind as "project" | "experience" | "additional" | "standalone" : "standalone";
 
@@ -146,12 +142,10 @@ async function saveMeta(formData: FormData) {
     .update({ title, slug, kind, published })
     .eq("id", id);
 
-  // Revalidate all relevant paths
   revalidatePath(`/admin/${id}`);
-  revalidatePath("/admin"); // Admin list page
-  revalidatePath("/"); // Homepage/navbar
+  revalidatePath("/admin");
+  revalidatePath("/");
 
-  // Also revalidate the specific page route if it's published
   if (published && slug) {
     revalidatePath(`/${slug}`);
   }

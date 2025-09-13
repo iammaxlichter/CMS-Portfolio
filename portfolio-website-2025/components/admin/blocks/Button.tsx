@@ -1,6 +1,6 @@
 "use client";
-import type { Block } from "@/lib/blocks/types";
-import { isButtonData } from "@/lib/blocks/types";
+import type { Block } from "@/lib/blocks";
+import { isButtonData } from "@/lib/blocks";
 
 export default function ButtonEditor({
   block,

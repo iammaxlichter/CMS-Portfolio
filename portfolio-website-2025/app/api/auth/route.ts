@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   const { event, session } = await req.json();
 
-  // ⬅️ Next.js 15: cookies() returns a Promise
   const cookieStore = await cookies();
 
   const supabase = createServerClient(

@@ -1,6 +1,6 @@
 "use client";
-import type { Block, DateData } from "@/lib/blocks/types";
-import { isDateData } from "@/lib/blocks/types";
+import type { Block, DateData } from "@/lib/blocks";
+import { isDateData } from "@/lib/blocks";
 
 export default function DateEditor({
   block,

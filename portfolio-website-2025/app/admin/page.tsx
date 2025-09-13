@@ -20,7 +20,7 @@ function verifyMfaCookie(raw: string | undefined, userId: string): boolean {
     if (sig !== expected) return false;
     const { uid, iat } = JSON.parse(payload) as { uid: string; iat: number };
     if (uid !== userId) return false;
-    if (Date.now()/1000 - iat > 10 * 60) return false; // 10 min expiry
+    if (Date.now()/1000 - iat > 10 * 60) return false; 
     return true;
   } catch { return false; }
 }
@@ -28,11 +28,9 @@ function verifyMfaCookie(raw: string | undefined, userId: string): boolean {
 export default async function AdminHome() {
   const supabase = await createClient();
 
-  // 1) Must be signed in
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/admin/signin?next=/admin");
 
-  // 2) Must be admin (profiles.role)
   const { data: profile, error: profileErr } = await supabase
     .from("profiles")
     .select("role")
@@ -42,16 +40,13 @@ export default async function AdminHome() {
   if (profileErr) throw new Error(`profiles fetch failed: ${profileErr.message}`);
   if (!profile || profile.role !== "admin") redirect("/");
 
-  // 3) Must have a valid, signed MFA cookie (10 min)
   const mfaCookie = (await cookies()).get("mfa_ok")?.value;
   if (!verifyMfaCookie(mfaCookie, user.id)) {
-    // If they don't even have a verified TOTP factor yet, send to setup
     const { data: factors } = await supabase.auth.mfa.listFactors();
     const hasVerifiedTotp = factors?.totp?.some(f => f.status === "verified");
     redirect(hasVerifiedTotp ? "/admin/mfa/verify" : "/admin/mfa/setup");
   }
 
-  // 4) Load admin data
   const { data: pages, error: pagesErr } = await supabase
     .from("pages")
     .select("id, title, slug, kind, published, created_at, nav_order")
@@ -102,7 +97,6 @@ export default async function AdminHome() {
   );
 }
 
-/* ---------------- Server actions ---------------- */
 
 async function createPage(formData: FormData) {
   "use server";

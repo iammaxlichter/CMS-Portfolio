@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import type { Block, ParagraphData } from "@/lib/blocks/types";
+import type { Block, ParagraphData } from "@/lib/blocks";
 
 export default function Paragraph({
   block,

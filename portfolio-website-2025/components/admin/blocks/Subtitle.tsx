@@ -1,6 +1,6 @@
 "use client";
-import type { Block, SubtitleData } from "@/lib/blocks/types";
-import { isSubtitleData } from "@/lib/blocks/types";
+import type { Block, SubtitleData } from "@/lib/blocks";
+import { isSubtitleData } from "@/lib/blocks";
 
 export default function SubtitleEditor({
   block,

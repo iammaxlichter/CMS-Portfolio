@@ -1,7 +1,7 @@
 // components/admin/blocks/registry.tsx
 "use client";
 import type { JSX } from "react";
-import type { Block } from "@/lib/blocks/types";
+import type { Block } from "@/lib/blocks";
 import TitleEditor from "@/components/admin/blocks/Title";
 import SubtitleEditor from "@/components/admin/blocks/Subtitle";
 import Paragraph from "@/components/admin/blocks/Paragraph";

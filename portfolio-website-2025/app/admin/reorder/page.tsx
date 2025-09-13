@@ -42,13 +42,12 @@ export default async function ReorderNavPage() {
   );
 }
 
-/* ---------- server action (local to this page) ---------- */
 async function saveNavOrder(formData: FormData) {
   "use server";
   const supabase = await (await import("@/lib/supabase/server")).createClient();
 
-  const projects    = JSON.parse(String(formData.get("projects") ?? "[]")) as string[];
-  const experience  = JSON.parse(String(formData.get("experience") ?? "[]")) as string[];
+  const projects = JSON.parse(String(formData.get("projects") ?? "[]")) as string[];
+  const experience = JSON.parse(String(formData.get("experience") ?? "[]")) as string[];
   const standalones = JSON.parse(String(formData.get("standalones") ?? "[]")) as string[];
 
   const updateGroup = async (ids: string[]) => {
@@ -59,7 +58,6 @@ async function saveNavOrder(formData: FormData) {
 
   await Promise.all([updateGroup(projects), updateGroup(experience), updateGroup(standalones)]);
 
-  // refresh navbar + this page
   revalidatePath("/");
   revalidatePath("/admin/reorder");
 }

@@ -1,6 +1,7 @@
 "use client";
-import type { Block, CardGridData, CardItem } from "@/lib/blocks/types";
-import { isCardGridData } from "@/lib/blocks/types";
+import type { Block, CardGridData, CardItem } from "@/lib/blocks";
+import { isCardGridData } from "@/lib/blocks";
+
 
 export default function CardGridEditor({
   block,

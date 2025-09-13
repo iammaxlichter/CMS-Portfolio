@@ -2,7 +2,7 @@
 import { useSensors, useSensor, PointerSensor, KeyboardSensor } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import type { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
-import type { Block } from "@/lib/blocks/types";
+import type { Block } from "@/lib/blocks";
 import { supabase } from "@/lib/supabase/client";
 import { between } from "@/components/admin/utils/positions";
 import {

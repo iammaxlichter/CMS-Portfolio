@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import type { Block, GalleryData, GalleryItem } from "@/lib/blocks/types";
+import type { Block, GalleryData, GalleryItem } from "@/lib/blocks";
 
 type GalleryBlock = Block & { data: GalleryData };
 

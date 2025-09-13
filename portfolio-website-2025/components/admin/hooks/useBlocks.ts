@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";
-import type { Block, BlockType } from "@/lib/blocks/types";
-import { DefaultData } from "@/lib/blocks/types";
+import type { Block, BlockType } from "@/lib/blocks";
+import { DefaultData } from "@/lib/blocks";
 
 export default function useBlocks(pageId: string, initial: Block[]) {
   const [blocks, setBlocks] = useState<Block[]>(
