@@ -1,2 +1,1 @@
 bobalite page
-admin page --> need to add a way to add new admin users
