@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
 import Link from "next/link";
-// Alternative approach: Load PDF.js from CDN for consistent versioning
 declare global {
     interface Window {
         pdfjsLib: any;
@@ -17,23 +16,19 @@ export default function ResumeUploader() {
     const [preview, setPreview] = useState<string | null>(null);
     const [pdfjsLoaded, setPdfjsLoaded] = useState(false);
 
-    // Load PDF.js from CDN with consistent versioning
     useEffect(() => {
         const loadPdfJsFromCDN = () => {
-            const PDFJS_VERSION = '3.11.174'; // Use a known stable version
+            const PDFJS_VERSION = '3.11.174';
 
-            // Check if already loaded
             if (window.pdfjsLib) {
                 setPdfjsLoaded(true);
                 return;
             }
 
-            // Create script element
             const script = document.createElement('script');
             script.src = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.min.js`;
             script.onload = () => {
                 if (window.pdfjsLib) {
-                    // Set worker source to match the exact version
                     window.pdfjsLib.GlobalWorkerOptions.workerSrc =
                         `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VERSION}/pdf.worker.min.js`;
                     console.log(`PDF.js ${PDFJS_VERSION} loaded from CDN`);
@@ -47,7 +42,6 @@ export default function ResumeUploader() {
 
             document.head.appendChild(script);
 
-            // Cleanup function
             return () => {
                 if (script.parentNode) {
                     script.parentNode.removeChild(script);
@@ -70,7 +64,7 @@ export default function ResumeUploader() {
         }).promise;
 
         const page = await pdf.getPage(1);
-        const scale = 2; // 2x for crispness
+        const scale = 2;
         const viewport = page.getViewport({ scale });
 
         const canvas = document.createElement("canvas");
@@ -80,13 +74,11 @@ export default function ResumeUploader() {
         canvas.width = Math.ceil(viewport.width);
         canvas.height = Math.ceil(viewport.height);
 
-        // 👇 paint white first so background isn't transparent/black
         ctx.save();
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.restore();
 
-        // Also tell PDF.js the intended background (supported in recent versions)
         await page.render({
             canvasContext: ctx,
             viewport,
@@ -129,7 +121,6 @@ export default function ResumeUploader() {
 
         setBusy(true);
         try {
-            // Upload PDF first
             const pdfRes = await supabase.storage
                 .from("resume")
                 .upload("Max-Lichter-Resume.pdf", pdf, {
@@ -139,7 +130,6 @@ export default function ResumeUploader() {
 
             if (pdfRes.error) throw pdfRes.error;
 
-            // Generate and upload PNG (only if PDF.js is loaded)
             if (pdfjsLoaded) {
                 try {
                     const pngBlob = await convertPdfToPng(pdf);
@@ -156,18 +146,18 @@ export default function ResumeUploader() {
 
                     if (pngRes.error) throw pngRes.error;
 
-                    setMsg("✅ Resume uploaded successfully! PDF available for download, PNG preview generated.");
+                    setMsg("Resume uploaded successfully! PDF available for download, PNG preview generated.");
                 } catch (pngError) {
                     console.error('PNG generation failed:', pngError);
-                    setMsg("✅ PDF uploaded successfully! (Preview generation failed - PNG may need manual upload)");
+                    setMsg("PDF uploaded successfully! (Preview generation failed - PNG may need manual upload)");
                 }
             } else {
-                setMsg("✅ PDF uploaded successfully! (Preview generation not available - PDF.js still loading)");
+                setMsg("PDF uploaded successfully! (Preview generation not available - PDF.js still loading)");
             }
 
         } catch (err: any) {
             console.error('Upload error:', err);
-            setMsg(`❌ Upload failed: ${err.message ?? err}`);
+            setMsg(`Upload failed: ${err.message ?? err}`);
         } finally {
             setBusy(false);
         }

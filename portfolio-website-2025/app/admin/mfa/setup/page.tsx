@@ -13,7 +13,6 @@ export default function MfaSetup() {
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // On mount: ensure signed in, check if already verified; if not, enroll and show QR
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -33,7 +32,6 @@ export default function MfaSetup() {
     })();
   }, [router]);
 
-  // Confirm first 6-digit code to finish enrollment
   async function onVerify(e: React.FormEvent) {
     e.preventDefault();
     setErr('');
@@ -49,7 +47,6 @@ export default function MfaSetup() {
     });
     if (verifyErr) { setErr(verifyErr.message); return; }
 
-    // Enrollment complete. Next time the user logs in, they'll be prompted on /admin/mfa/verify
     router.replace('/admin/mfa/verify');
   }
 

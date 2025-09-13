@@ -30,7 +30,6 @@ export default function AnimOnView({
 
     const isFullyVisible = (entry: IntersectionObserverEntry) => {
       const r = entry.boundingClientRect;
-      // Fallback if rootBounds is null (iOS Safari sometimes)
       const rootTop = entry.rootBounds?.top ?? 0;
       const rootBottom =
         entry.rootBounds?.bottom ?? window.innerHeight;

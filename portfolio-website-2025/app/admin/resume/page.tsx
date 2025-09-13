@@ -16,7 +16,6 @@ export default async function AdminResumePage() {
     .maybeSingle();
   if (!profile || profile.role !== "admin") return null;
 
-  // Check if files exist before getting URLs
   const { data: files } = await supabase.storage.from("resume").list();
   const pdfExists = files?.some(file => file.name === "Max-Lichter-Resume.pdf");
   const pngExists = files?.some(file => file.name === "Max-Lichter-Resume.png");

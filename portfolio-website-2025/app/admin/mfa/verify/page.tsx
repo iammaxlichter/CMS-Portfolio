@@ -12,7 +12,6 @@ export default function MfaVerify() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  // Ensure signed in + load verified factor
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();

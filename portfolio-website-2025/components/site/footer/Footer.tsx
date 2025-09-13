@@ -22,7 +22,6 @@ const item: Variants = {
   },
 };
 
-// If you also pass inline `transition={...}` props elsewhere, typing them helps too:
 const hoverTapSpring: Transition = { type: "spring", stiffness: 500, damping: 32 };
 
 export default function Footer() {
