@@ -50,7 +50,10 @@ export default async function AchievementsAdmin() {
           className="flex-1 rounded border p-2 bg-white text-sm"
           required
         />
-        <button className="rounded bg-black text-white px-3 py-2 text-sm">Add</button>
+        <button className="rounded bg-black text-white px-3 py-2 text-sm cursor-pointer hover:bg-neutral-700 transition-colors">
+          Add
+        </button>
+
       </form>
 
       {/* Mass edit + reorder + single save */}
@@ -108,11 +111,11 @@ async function saveAllAchievements(formData: FormData) {
   const target = ids.map((id, i) => {
     const text = String(formData.get(`text-${id}`) ?? "").trim();
     const published = formData.get(`published-${id}`) != null;
-    const position = i + 1; 
+    const position = i + 1;
     return { id, text, published, position };
   });
 
-  const OFFSET = 1000; 
+  const OFFSET = 1000;
   for (let i = 0; i < target.length; i++) {
     const { id } = target[i];
     const tempPos = OFFSET + i + 1;
