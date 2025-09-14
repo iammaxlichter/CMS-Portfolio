@@ -9,12 +9,12 @@ const libreFranklin = Libre_Franklin({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
   variable: "--font-libre-franklin",
-  adjustFontFallback: false, // Disables automatic fallback generation
-  fallback: ["sans-serif"], // Manual fallback chain
+  adjustFontFallback: false,
+  fallback: ["sans-serif"],
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio Website",
+  title: "Max Lichter",
   description: "Max Lichter Portfolio",
     icons: {
     icon: "/images/other/logoWhite.png", 

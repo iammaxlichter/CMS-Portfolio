@@ -42,7 +42,6 @@ export default async function AchievementsAdmin() {
 
       <h1 className="text-2xl font-semibold">Contact Page Achievements</h1>
 
-      {/* Create */}
       <form action={createAchievement} className="flex gap-2">
         <input
           name="text"
@@ -56,7 +55,6 @@ export default async function AchievementsAdmin() {
 
       </form>
 
-      {/* Mass edit + reorder + single save */}
       <section className="space-y-2">
         <h2 className="text-lg font-semibold">Edit & Reorder</h2>
         <AchievementsManager

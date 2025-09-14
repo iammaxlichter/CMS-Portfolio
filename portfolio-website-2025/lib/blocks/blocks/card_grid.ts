@@ -1,3 +1,4 @@
+// lib/blocks/blocks/card_grid.ts
 export type CardItem = {
   title: string;
   href: string;
@@ -10,6 +11,9 @@ export type CardItem = {
   marginLeft?: number;
   marginRight?: number;
   thumbMaxWidthPx?: number;
+  borderWidthPx?: number;
+  borderColor?: string;
+  paddingPx?: number;
 };
 
 export type CardGridData = {
@@ -17,11 +21,4 @@ export type CardGridData = {
   borderWidthPx?: number;
   borderColor?: string;
   paddingPx?: number;
-};
-
-export const cardGridDefault: CardGridData = {
-  items: [],
-  borderWidthPx: 0,
-  borderColor: "#343330",
-  paddingPx: 0,
 };

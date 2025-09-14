@@ -8,7 +8,6 @@ import ColumnsView from "@/components/blocks/ColumnsView";
 export default async function Page({
   params,
 }: {
-  // params can be async and values can be string | string[]
   params: Promise<{ slug: string | string[] }>;
 }) {
   const p = await params;

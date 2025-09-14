@@ -108,14 +108,17 @@ export default async function AdminHome({
         >
           Contact Page Achievements
         </Link>
+        <Link
+          href="/admin/images"
+          className="inline-block rounded bg-[#343330] px-3 py-2 text-white text-sm hover:bg-black"
+        >
+          Image Upload
+        </Link>
       </div>
 
       <h1 className="text-2xl font-semibold">Admin · Pages</h1>
 
-      {/* Filter + Sort toolbar */}
       <PageToolbar sort={sort} kinds={selectedKinds} />
-
-      {/* Reactive Create form */}
       <CreatePageForm action={createPage} />
 
       <ul className="divide-y rounded border bg-white">
