@@ -10,7 +10,7 @@ type Particle = {
   y: number;
   size: number;
   duration: number;
-  fadeAfter?: number; // ms before opacity starts fading
+  fadeAfter?: number;
 };
 
 export default function Home() {
@@ -21,7 +21,6 @@ export default function Home() {
   );
 }
 
-/** Floating field with base drifting squares + hover-spawned mini squares */
 function HoverFloatField() {
   const [particles, setParticles] = useState<Particle[]>([]);
   const idRef = useRef(0);
@@ -31,7 +30,6 @@ function HoverFloatField() {
   const BASE_HEIGHT = 0.88 * (typeof window !== "undefined" ? window.innerHeight : 800);
   const MAX_PARTICLES = 120;
 
-  // spawn helper
   const spawn = useCallback((x: number, y: number, options?: Partial<Particle>) => {
     idRef.current += 1;
     const size = options?.size ?? rand(6, 16);
@@ -40,19 +38,17 @@ function HoverFloatField() {
     const p: Particle = { id: idRef.current, x, y, size, duration, fadeAfter };
     setParticles((prev) => {
       const next = [...prev, p];
-      // keep cap
+
       if (next.length > MAX_PARTICLES) next.splice(0, next.length - MAX_PARTICLES);
       return next;
     });
 
-    // schedule removal after animation ends
     const t = window.setTimeout(() => {
       setParticles((prev) => prev.filter((pp) => pp.id !== p.id));
     }, duration + 60);
     cleanupTimers.current.push(t);
   }, []);
 
-  // base drifting squares (static)
   const baseSquares = useMemo(
     () =>
       Array.from({ length: 6 }).map((_, i) => {
@@ -70,7 +66,6 @@ function HoverFloatField() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    // spawn a small burst following the cursor
     for (let k = 0; k < 3; k++) {
       spawn(
         x + rand(-12, 12),
@@ -85,7 +80,7 @@ function HoverFloatField() {
   }, [spawn]);
 
   const handleEnter = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    // small welcome puff
+
     const rect = e.currentTarget.getBoundingClientRect();
     const x = rect.width / 2;
     const y = rect.height * 0.7;
@@ -98,7 +93,6 @@ function HoverFloatField() {
     }
   }, [spawn]);
 
-  // clear timers on unmount
   const clearAll = useCallback(() => {
     cleanupTimers.current.forEach((t) => clearTimeout(t));
     cleanupTimers.current = [];
@@ -113,13 +107,12 @@ function HoverFloatField() {
       className="relative w-full overflow-hidden"
       style={{ height: "88vh" }}
     >
-      {/* gradient bg */}
+
       <div className="absolute inset-0 z-0"
         style={{ background: "linear-gradient(to right, #9D231B, #c25643)" }} />
 
       <KineticHeadline />
 
-      {/* base drifting squares (like your original) */}
       <ul className="absolute inset-0 m-0 p-0 overflow-hidden list-none pointer-events-none">
         {baseSquares.map(({ i, left, w, delay, dur }) => (
           <li
@@ -136,11 +129,10 @@ function HoverFloatField() {
         ))}
       </ul>
 
-      {/* hover-spawned mini squares */}
       <div className="absolute inset-0 pointer-events-none">
         {particles.map((p) => {
           const delay = p.fadeAfter ?? 900;
-          const fadeDur = Math.max(0, p.duration - delay); // avoid negatives
+          const fadeDur = Math.max(0, p.duration - delay);
           return (
             <span
               key={p.id}
@@ -150,7 +142,6 @@ function HoverFloatField() {
                 top: p.y - p.size / 2,
                 width: p.size,
                 height: p.size,
-                // Run both animations: rise immediately, fade after `delay`
                 animation: `rise ${p.duration}ms linear forwards, fade ${fadeDur}ms linear ${delay}ms forwards`,
               }}
             />
@@ -158,7 +149,6 @@ function HoverFloatField() {
         })}
       </div>
 
-      {/* local styles */}
       <style jsx>{`
   @keyframes floatSpin {
     0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
@@ -180,11 +170,9 @@ function HoverFloatField() {
 }
 
 
-// Add this component anywhere in the same file (below is fine)
 function KineticHeadline() {
   return (
     <div className="relative z-10 h-full w-full flex items-center justify-center text-center px-6 overflow-hidden">
-      {/* Enhanced ambient background with floating particles */}
       <div className="absolute inset-0">
         <div className="particle particle-1" />
         <div className="particle particle-2" />
@@ -193,14 +181,12 @@ function KineticHeadline() {
         <div className="particle particle-5" />
       </div>
 
-      {/* Multi-layer pulse rings with varying sizes and delays */}
       <div className="absolute" style={{ width: 0, height: 0 }}>
         <span className="ring-pulse ring2" />
         <span className="ring-pulse ring3" />
         <span className="ring-pulse ring4" />
       </div>
 
-      {/* Animated gradient mesh background */}
       <div
         className="absolute inset-0 opacity-20 animate-meshMove"
         style={{
@@ -213,7 +199,6 @@ function KineticHeadline() {
       />
 
       <div className="relative">
-        {/* Enhanced soft glow with color shifting */}
         <div
           aria-hidden
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[42vw] max-w-[560px] aspect-square rounded-full blur-3xl opacity-40 animate-glowPulse"
@@ -223,7 +208,6 @@ function KineticHeadline() {
         />
 
         <h1 className="leading-tight">
-          {/* Greeting with staggered letter animation */}
           <span className="block text-white/90 text-lg md:text-xl font-light tracking-wide mb-2">
             {"I'm a Software Engineer, my name is".split("").map((char, i) => (
               <span
@@ -236,7 +220,6 @@ function KineticHeadline() {
             ))}
           </span>
 
-          {/* Enhanced NAME with morphing background and 3D effect */}
           <span className="relative inline-block group">
             <span
               className="relative block font-extrabold tracking-[-0.02em] animate-nameEntrance transform-gpu will-change-transform"
@@ -253,12 +236,10 @@ function KineticHeadline() {
             >
               Max Lichter
 
-              {/* Enhanced sheen with rainbow effect */}
               <span className="absolute inset-0 overflow-hidden rounded-md pointer-events-none">
                 <span className="sheen-enhanced block h-full w-[35%]" />
               </span>
 
-              {/* Sparkle effects on hover */}
               <span className="sparkles absolute inset-0 pointer-events-none">
                 <span className="sparkle sparkle-1">✦</span>
                 <span className="sparkle sparkle-2">✧</span>
@@ -272,9 +253,7 @@ function KineticHeadline() {
         </h1>
       </div>
 
-      {/* Enhanced styles with more sophisticated animations */}
       <style jsx>{`
-        /* Floating particles */
         .particle {
           position: absolute;
           width: 4px;
@@ -296,7 +275,6 @@ function KineticHeadline() {
           75% { transform: translateY(-40px) translateX(30px) rotate(270deg); opacity: 0.7; }
         }
 
-        /* Animated mesh background */
         @keyframes meshMove {
           0%, 100% { transform: rotate(0deg) scale(1); }
           33% { transform: rotate(1deg) scale(1.05); }
@@ -304,14 +282,12 @@ function KineticHeadline() {
         }
         .animate-meshMove { animation: meshMove 15s ease-in-out infinite; }
 
-        /* Glowing background pulse */
         @keyframes glowPulse {
           0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
           50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.6; }
         }
         .animate-glowPulse { animation: glowPulse 4s ease-in-out infinite; }
 
-        /* Sparkle effects */
         .sparkles { opacity: 0; transition: opacity 600ms ease; }
         .group:hover .sparkles { opacity: 1; }
         
@@ -332,7 +308,6 @@ function KineticHeadline() {
           50% { opacity: 1; transform: scale(1) rotate(180deg); }
         }
 
-        /* Tagline slide animation */
         @keyframes taglineSlide {
           from { opacity: 0; transform: translateY(25px) translateX(-20px); }
           to { opacity: 1; transform: translateY(0) translateX(0); }
@@ -342,7 +317,6 @@ function KineticHeadline() {
           animation-delay: 800ms;
         }
 
-        /* Enhanced 3D roller */
         .perspective-container { perspective: 200px; }
         .roller-3d {
           display: inline-block;
@@ -357,7 +331,6 @@ function KineticHeadline() {
           transition: all 400ms ease;
         }
 
-        /* Enhanced pulse rings with more variety */
         .ring-pulse {
           position: absolute;
           left: 50%;
@@ -486,7 +459,6 @@ function FlipDescriptor() {
           backface-visibility: hidden;
           height: 1.35em; line-height: 1.35em;
         }
-        /* 3 items, step at 0%, 33.33%, 66.66% */
         @keyframes flip {
           0%   { transform: rotateX(0deg); }
           26%  { transform: rotateX(0deg); }

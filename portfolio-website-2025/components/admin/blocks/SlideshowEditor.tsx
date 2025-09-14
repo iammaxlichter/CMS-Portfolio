@@ -28,10 +28,8 @@ export default function SlideshowEditor({
     };
   }, [block.data]);
 
-  // Local "raw" textarea state so Enter/Shift+Enter create real newlines while typing
   const [rawPaths, setRawPaths] = useState<string>(() => (data.paths ?? []).join("\n"));
 
-  // Keep textarea in sync if the block changes externally
   useEffect(() => {
     setRawPaths((data.paths ?? []).join("\n"));
   }, [data.paths]);
@@ -50,14 +48,12 @@ export default function SlideshowEditor({
           onChange={(e) => setRawPaths(e.currentTarget.value)}
           onBlur={(e) =>
             set({
-              // Commit cleaned list on blur only (allows blank lines while editing)
               paths: e.currentTarget.value
                 .split(/\r?\n/)
                 .map((s) => s.trim())
                 .filter(Boolean),
             })
           }
-          // Shield from parent DnD/global handlers so Enter inserts a newline
           onKeyDownCapture={(e) => e.stopPropagation()}
           onPointerDownCapture={(e) => e.stopPropagation()}
         />
