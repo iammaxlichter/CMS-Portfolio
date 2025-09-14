@@ -3,6 +3,8 @@
 A dynamic, self-built portfolio website powered by **Next.js, TypeScript, and Supabase**.  
 This project includes a custom drag-and-drop page builder that allows me to create, edit, and manage content blocks without relying on third-party CMS platforms.
 
+<br>
+
 ## Features
 - Drag-and-drop page builder for managing layout and structure  
 - Custom block types: titles, subtitles, images, galleries, slideshows, videos, buttons, and card grids  
