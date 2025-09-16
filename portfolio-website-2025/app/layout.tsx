@@ -3,6 +3,7 @@ import { Libre_Franklin } from "next/font/google";
 import Navbar from "@/components/site/nav/Navbar";
 import Footer from "@/components/site/footer/Footer"
 import "./globals.css";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 const libreFranklin = Libre_Franklin({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${libreFranklin.variable} antialiased`}>
         <Navbar />
+        <ScrollToTop />
         <main className=" bg-[#FBFBFB]">
           {children}
         </main>
