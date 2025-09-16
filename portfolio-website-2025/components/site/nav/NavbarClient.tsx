@@ -110,6 +110,9 @@ export default function NavbarClient({
   standalones?: Item[];
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [projOpen, setProjOpen] = useState(false);
+  const [expOpen, setExpOpen] = useState(false);
+
   const pathname = usePathname();
 
   const projectsActive = projects.some((it) => it.href === pathname);
@@ -235,11 +238,17 @@ export default function NavbarClient({
               Home
             </Link>
 
-            <details className="group" open>
+            {/* Projects */}
+            <details
+              className="group"
+              open={projOpen}
+              onToggle={(e) => setProjOpen((e.currentTarget as HTMLDetailsElement).open)}
+            >
               <summary className="flex cursor-pointer list-none items-center justify-between rounded px-3 py-2 hover:bg-white/10 transition">
                 <span className={projectsActive ? "font-bold" : undefined}>Projects</span>
-                <CaretDown className="h-4 w-4" rotated />
+                <CaretDown className="h-4 w-4" rotated={projOpen} />
               </summary>
+
               <div className="mt-1 space-y-1 pl-4">
                 {projects.map((it, i) => (
                   <motion.div
@@ -263,11 +272,17 @@ export default function NavbarClient({
               </div>
             </details>
 
-            <details className="group" open>
+            {/* Experience */}
+            <details
+              className="group"
+              open={expOpen}
+              onToggle={(e) => setExpOpen((e.currentTarget as HTMLDetailsElement).open)}
+            >
               <summary className="flex cursor-pointer list-none items-center justify-between rounded px-3 py-2 hover:bg-white/10 transition">
                 <span className={experienceActive ? "font-bold" : undefined}>Experience</span>
-                <CaretDown className="h-4 w-4" rotated />
+                <CaretDown className="h-4 w-4" rotated={expOpen} />
               </summary>
+
               <div className="mt-1 space-y-1 pl-4">
                 {experience.map((it, i) => (
                   <motion.div
@@ -290,6 +305,7 @@ export default function NavbarClient({
                 ))}
               </div>
             </details>
+
 
             {standalones.map((it, i) => (
               <motion.div
