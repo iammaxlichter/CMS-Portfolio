@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "Max Lichter",
   description: "Max Lichter Portfolio",
     icons: {
-    icon: "/images/other/logoWhite.png", 
+    icon: "/images/other/logoBlack.png", 
   },
 };
 
