@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import crypto from "crypto";
 
-const MAX_AGE = 10 * 60;
+const MAX_AGE = 60 * 60;
 
 export async function POST() {
   const c = await cookies();

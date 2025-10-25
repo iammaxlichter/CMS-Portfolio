@@ -16,7 +16,7 @@ export function verifyMfaCookie(raw: string | undefined, userId: string): boolea
     if (sig !== expected) return false;
     const { uid, iat } = JSON.parse(payload) as { uid: string; iat: number };
     if (uid !== userId) return false;
-    if (Date.now() / 1000 - iat > 10 * 60) return false;
+    if (Date.now() / 1000 - iat > 60 * 60) return false;
     return true;
   } catch {
     return false;

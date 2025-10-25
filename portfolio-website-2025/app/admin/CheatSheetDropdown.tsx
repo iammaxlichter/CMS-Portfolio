@@ -49,6 +49,7 @@ export default function CheatSheetDropdown({
         items: [
           "Space from subtitle/date → main content: 80px.",
           "Space from last content block → bottom: 80px.",
+          "Usually between blocks, I'll have 20px margin bottom (upper block), and then 50px margin top (lower block)"
         ],
       },
       {

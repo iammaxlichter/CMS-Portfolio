@@ -16,10 +16,8 @@ export const dynamic = "force-dynamic";
 export default async function AdminHome({
   searchParams,
 }: {
-  // Next.js async searchParams (can be a Promise and values may be string[])
   searchParams?: Promise<{ sort?: string | string[]; kinds?: string | string[] }>;
 }) {
-  // ✅ await searchParams first
   const sp = await searchParams;
   const sortParam = Array.isArray(sp?.sort) ? sp?.sort[0] : sp?.sort;
   const kindsParam = Array.isArray(sp?.kinds) ? sp?.kinds.join(",") : sp?.kinds;
@@ -85,6 +83,25 @@ export default async function AdminHome({
                 DB: {supa.projectRef}
               </span>
             )}
+          </div>
+          <div className="flex gap-2 text-xs text-blue-600 mt-1">
+            <a
+              href={`https://supabase.com/dashboard/project/${supa?.projectRef}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              Open Supabase
+            </a>
+            <span className="text-neutral-400">•</span>
+            <a
+              href={`https://vercel.com/max-lichters-projects/portfolio-website-2025-uasy`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              Open Vercel
+            </a>
           </div>
         </div>
       </header>
