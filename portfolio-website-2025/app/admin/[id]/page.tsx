@@ -4,6 +4,7 @@ import BlockEditor from "@/components/admin/editor/BlockEditor";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import CheatSheetDropdown from "../CheatSheetDropdown";
 
 export default async function EditPage({
   params
@@ -41,11 +42,17 @@ export default async function EditPage({
     <main className="mx-auto max-w-4xl p-6 space-y-6">
       <Link
         href="/admin"
-        className="inline-block rounded bg-neutral-200 px-3 py-2 text-sm text-black hover:bg-neutral-300"
+        className="inline-block rounded bg-neutral-200 px-3 py-2 mr-5 text-sm text-black hover:bg-neutral-300"
       >
         ← Back to Admin
       </Link>
 
+      <CheatSheetDropdown
+        pageTitle={page?.title ?? null}
+        pageKind={(page?.kind as any) ?? null}
+        supabaseUrl="https://supabase.com/dashboard/project/mjlcamulmtvseegaihce"   // ← your dashboard or bucket URL
+        vercelUrl="https://vercel.com/max-lichters-projects/portfolio-website-2025-uasy"           // ← your project on Vercel
+      />
       <form action={saveMeta} className="space-y-3">
         <input type="hidden" name="id" defaultValue={page?.id} />
         <div>
