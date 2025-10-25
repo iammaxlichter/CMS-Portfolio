@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 
-export default function AdminSignin() {
+function SignInInner() {
   const router = useRouter();
   const sp = useSearchParams();
   const nextUrl = sp.get('next') || '/admin';
@@ -26,7 +26,6 @@ export default function AdminSignin() {
       setErr(error.message);
       return;
     }
-
     router.replace(nextUrl);
   }
 
@@ -86,5 +85,17 @@ export default function AdminSignin() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function AdminSigninPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen grid place-items-center px-4">
+        <div className="text-sm text-neutral-600">Loading…</div>
+      </main>
+    }>
+      <SignInInner />
+    </Suspense>
   );
 }
