@@ -30,9 +30,9 @@ export default function MfaVerify() {
     if (!factorId || submitting) return;
     setSubmitting(true); setErr('');
     const { data: chall, error: challErr } = await supabase.auth.mfa.challenge({ factorId });
-    if (challErr) { setErr(challErr.message); setSubmitting(false); lastTried.current=''; return; }
+    if (challErr) { setErr(challErr.message); setSubmitting(false); return; }
     const { error: verifyErr } = await supabase.auth.mfa.verify({ factorId, challengeId: chall.id, code: c });
-    if (verifyErr) { setErr(verifyErr.message); setSubmitting(false); lastTried.current=''; return; }
+    if (verifyErr) { setErr(verifyErr.message); setSubmitting(false); return; }
     await fetch('/api/mfa/ok', { method: 'POST' });
     router.replace('/admin');
   }
