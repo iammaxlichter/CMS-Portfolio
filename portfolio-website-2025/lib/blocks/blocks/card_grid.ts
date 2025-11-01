@@ -22,3 +22,10 @@ export type CardGridData = {
   borderColor?: string;
   paddingPx?: number;
 };
+
+export const cardGridDefault: CardGridData = {
+  items: [],
+  borderWidthPx: 0,
+  borderColor: "#343330",
+  paddingPx: 0,
+};

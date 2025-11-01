@@ -1,4 +1,4 @@
-import type { Block, Slot } from "../../../lib/blocks/types";
+import type { Block, Slot,  } from "../../../lib/blocks/core";
 
 export type ContainerId = "root" | `col-left:${string}` | `col-right:${string}`;
 

@@ -139,7 +139,7 @@ export default async function EditPage({
           Published
         </label>
         <button className="rounded bg-black text-white px-3 py-2 hover:bg-neutral-800">
-          Save
+          Save Page Settings 
         </button>
       </form>
 
