@@ -138,7 +138,8 @@ export default async function AdminHome({
       <PageToolbar sort={sort} kinds={selectedKinds} />
       <CreatePageForm action={createPage} />
 
-      <ul className="divide-y rounded border bg-white">
+      <span className="text-neutral-500">*Note: page needs to be unpublished to be deleted*</span>
+      <ul className="divide-y rounded border bg-white mt-2">
         {pages.length > 0 ? (
           pages.map((p) => (
             <li key={p.id} className="p-4 flex items-center justify-between">
