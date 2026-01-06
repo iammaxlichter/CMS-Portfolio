@@ -3,21 +3,31 @@ import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
   title: "Resume | Max Lichter",
-  description: "Fall 2025 Resume",
+  description: "Resume",
 };
 
 export default async function ResumePage() {
   const supabase = await createClient();
+
+  const { data: settings } = await supabase
+    .from("resume_settings")
+    .select("title")
+    .eq("id", 1)
+    .maybeSingle();
+
+  const titleText = settings?.title ?? "Resume";
 
   const { data: files } = await supabase.storage.from("resume").list();
   const pdfExists = files?.some((f) => f.name === "Max-Lichter-Resume.pdf");
   const pngExists = files?.some((f) => f.name === "Max-Lichter-Resume.png");
 
   const pdf = pdfExists
-    ? supabase.storage.from("resume").getPublicUrl("Max-Lichter-Resume.pdf").data.publicUrl
+    ? supabase.storage.from("resume").getPublicUrl("Max-Lichter-Resume.pdf").data
+        .publicUrl
     : null;
   const png = pngExists
-    ? supabase.storage.from("resume").getPublicUrl("Max-Lichter-Resume.png").data.publicUrl
+    ? supabase.storage.from("resume").getPublicUrl("Max-Lichter-Resume.png").data
+        .publicUrl
     : null;
 
   const bust = `?v=${Date.now()}`;
@@ -50,7 +60,7 @@ export default async function ResumePage() {
       {/* Header row */}
       <div className="flex items-center gap-4 mb-8 opacity-0 [animation:slideInUp_0.6s_cubic-bezier(0.22,1,0.36,1)_0.02s_both]">
         <span className="text-[24px] font-semilight opacity-0 [animation:slideInLeft_0.7s_cubic-bezier(0.22,1,0.36,1)_0.06s_both]">
-          Fall 2025 Resume
+          {titleText}
         </span>
 
         {pdf && (
@@ -114,7 +124,10 @@ export default async function ResumePage() {
             <div className="w-full h-64 flex items-center justify-center text-gray-600">
               {pdfExists ? (
                 <div className="text-center opacity-0 [animation:fadeIn_0.5s_ease-out_0.15s_both]">
-                  <i className="fas fa-file-pdf text-4xl text-gray-400 mb-4" aria-hidden="true"></i>
+                  <i
+                    className="fas fa-file-pdf text-4xl text-gray-400 mb-4"
+                    aria-hidden="true"
+                  ></i>
                   <p className="mb-2">Resume preview not available</p>
                   <a
                     href={pdf ?? "#"}
@@ -132,7 +145,10 @@ export default async function ResumePage() {
                 </div>
               ) : (
                 <div className="text-center opacity-0 [animation:fadeIn_0.5s_ease-out_0.15s_both]">
-                  <i className="fas fa-file-times text-4xl text-gray-400 mb-4" aria-hidden="true"></i>
+                  <i
+                    className="fas fa-file-times text-4xl text-gray-400 mb-4"
+                    aria-hidden="true"
+                  ></i>
                   <p>No resume available</p>
                 </div>
               )}
@@ -144,7 +160,8 @@ export default async function ResumePage() {
       {/* Context text */}
       {png && pdf && (
         <p className="text-sm text-gray-500 mt-4 text-center max-w-2xl opacity-0 [animation:fadeIn_0.6s_ease-out_0.25s_both]">
-          Click anywhere on the resume image above to download the full PDF version.
+          Click anywhere on the resume image above to download the full PDF
+          version.
         </p>
       )}
     </main>

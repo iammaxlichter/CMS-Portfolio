@@ -3,6 +3,8 @@ export const dynamic = "force-dynamic";
 
 import { createClient } from "@/lib/supabase/server";
 import ResumeUploader from "./uploader";
+import ResumeTitleEditor from "./ResumeTitleEditor";
+import Link from "next/link";
 
 export default async function AdminResumePage() {
   const supabase = await createClient();
@@ -25,6 +27,17 @@ export default async function AdminResumePage() {
 
   return (
     <main className="mx-auto max-w-xl p-6 space-y-6">
+      
+      <div>
+        <Link
+          href="/admin"
+          className="inline-block rounded bg-neutral-200 px-3 py-2 text-sm text-black hover:bg-neutral-300"
+        >
+          ← Back to Admin
+        </Link>
+      </div>
+
+      <ResumeTitleEditor />
       <ResumeUploader />
     </main>
   );
