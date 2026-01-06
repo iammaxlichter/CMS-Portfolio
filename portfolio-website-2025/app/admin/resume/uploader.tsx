@@ -183,15 +183,6 @@ export default function ResumeUploader() {
 
         <div className="space-y-4">
 
-            <div>
-                <Link
-                    href="/admin"
-                    className="inline-block rounded bg-neutral-200 px-3 py-2 text-sm text-black hover:bg-neutral-300"
-                >
-                    ← Back to Admin
-                </Link>
-            </div>
-
             {!pdfjsLoaded && (
                 <div className="text-sm text-blue-600 bg-blue-50 p-3 rounded-md border border-blue-200">
                     <div className="flex items-center">
