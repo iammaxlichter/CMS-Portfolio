@@ -99,7 +99,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-[#FBFBFB]">
       <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-32 py-32">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* LEFT */}
           <motion.div
             variants={leftCol}
